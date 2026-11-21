@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   lint-and-style:
-    name: Lint and style check
+    name: Lint, schema and style check
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -33,6 +33,11 @@ jobs:
 
       - name: Run go vet
         run: go vet ./...
+
+      - name: Validate JSON Schema and Blueprint YAML settings
+        run: |
+          python3 -m json.tool blueprint/schema/settings.schema.json > /dev/null
+          go run ./cmd/blueprint-drift validate --blueprint blueprint/settings
 
       - name: Run style and hygiene check
         run: python3 scripts/style-check.py
@@ -68,4 +73,6 @@ jobs:
 
       - name: Smoke test binary
         shell: bash
-        run: ./blueprint-drift${{ runner.os == 'Windows' && '.exe' || '' }} version
+        run: |
+          ./blueprint-drift${{ runner.os == 'Windows' && '.exe' || '' }} version
+          ./blueprint-drift${{ runner.os == 'Windows' && '.exe' || '' }} validate --blueprint blueprint/settings

@@ -13,6 +13,7 @@ import (
 	"github.com/jusso-dev/blueprint-drift/src/blueprint"
 	"github.com/jusso-dev/blueprint-drift/src/engine"
 	"github.com/jusso-dev/blueprint-drift/src/graph"
+	"github.com/jusso-dev/blueprint-drift/src/snapshot"
 )
 
 var (
@@ -23,7 +24,7 @@ var (
 func run(args []string, stdout, stderr io.Writer) int {
 	if len(args) == 0 {
 		fmt.Fprintf(stdout, "blueprint-drift %s: read-only ASD Blueprint for Secure Cloud drift checker\n", version)
-		fmt.Fprintln(stdout, "Usage: blueprint-drift <version|validate|scan> [flags]")
+		fmt.Fprintln(stdout, "Usage: blueprint-drift <version|validate|scan|diff> [flags]")
 		return 0
 	}
 
@@ -35,6 +36,8 @@ func run(args []string, stdout, stderr io.Writer) int {
 		return runValidate(args[1:], stdout, stderr)
 	case "scan":
 		return runScan(args[1:], stdout, stderr)
+	case "diff":
+		return runDiff(args[1:], stdout, stderr)
 	default:
 		fmt.Fprintf(stderr, "unknown command %q\n", args[0])
 		return 2
@@ -69,6 +72,7 @@ func runScan(args []string, stdout, stderr io.Writer) int {
 	bpDir := fs.String("blueprint", "blueprint/settings", "Path to Blueprint YAML settings directory")
 	fixturesDir := fs.String("fixtures", "", "Path to offline Graph JSON fixtures directory")
 	outDir := fs.String("out", "evidence-pack", "Output directory for IRAP evidence pack")
+	snapshotDir := fs.String("snapshot-dir", "", "Optional directory to persist a local JSON snapshot")
 	tenantID := fs.String("tenant-id", "00000000-0000-0000-0000-000000000000", "Microsoft Entra tenant ID")
 	backend := fs.String("backend", "direct", "Graph backend: direct, junction or fixtures")
 	junctionBin := fs.String("junction-bin", "junction", "Path to junction binary when --backend junction")
@@ -182,6 +186,21 @@ func runScan(args []string, stdout, stderr io.Writer) int {
 		return 1
 	}
 
+	if *snapshotDir != "" {
+		snap, snapErr := snapshot.FromRun(runResult)
+		if snapErr != nil {
+			fmt.Fprintf(stderr, "build snapshot: %v\n", snapErr)
+			return 1
+		}
+		store := snapshot.NewStore(*snapshotDir)
+		savedPath, saveErr := store.Save(snap)
+		if saveErr != nil {
+			fmt.Fprintf(stderr, "save snapshot: %v\n", saveErr)
+			return 1
+		}
+		fmt.Fprintf(stdout, "Snapshot saved to %s\n", savedPath)
+	}
+
 	fmt.Fprintf(
 		stdout,
 		"Scan complete (%s): total=%d pass=%d fail=%d manual=%d error=%d. Evidence pack written to %s (%d artefacts).\n",
@@ -194,6 +213,70 @@ func runScan(args []string, stdout, stderr io.Writer) int {
 		*outDir,
 		len(manifest.Artefacts),
 	)
+	return 0
+}
+
+func runDiff(args []string, stdout, stderr io.Writer) int {
+	fs := flag.NewFlagSet("diff", flag.ContinueOnError)
+	fs.SetOutput(stderr)
+	storeDir := fs.String("store", "snapshots", "Snapshot store directory for resolving run IDs")
+	fromRef := fs.String("from", "", "Baseline snapshot file path or run ID")
+	toRef := fs.String("to", "", "Target snapshot file path or run ID")
+	format := fs.String("format", "text", "Output format: text, markdown or json")
+	outFile := fs.String("out", "", "Optional output file path (defaults to stdout)")
+	failOnDrift := fs.Bool("fail-on-drift", false, "Exit with code 3 when drift is detected")
+
+	if err := fs.Parse(args); err != nil {
+		return 2
+	}
+	if *fromRef == "" || *toRef == "" {
+		fmt.Fprintln(stderr, "--from and --to are required")
+		return 2
+	}
+
+	store := snapshot.NewStore(*storeDir)
+	fromSnap, err := store.Load(*fromRef)
+	if err != nil {
+		fmt.Fprintf(stderr, "load --from snapshot: %v\n", err)
+		return 1
+	}
+	toSnap, err := store.Load(*toRef)
+	if err != nil {
+		fmt.Fprintf(stderr, "load --to snapshot: %v\n", err)
+		return 1
+	}
+
+	report := snapshot.Diff(fromSnap, toSnap)
+
+	var output []byte
+	switch *format {
+	case "text":
+		output = []byte(snapshot.RenderText(report))
+	case "markdown", "md":
+		output = []byte(snapshot.RenderMarkdown(report))
+	case "json":
+		output, err = snapshot.RenderJSON(report)
+		if err != nil {
+			fmt.Fprintf(stderr, "render diff JSON: %v\n", err)
+			return 1
+		}
+	default:
+		fmt.Fprintf(stderr, "unsupported format %q (expected text, markdown or json)\n", *format)
+		return 2
+	}
+
+	if *outFile != "" {
+		if err := os.WriteFile(*outFile, output, 0o644); err != nil {
+			fmt.Fprintf(stderr, "write diff output %s: %v\n", *outFile, err)
+			return 1
+		}
+	} else {
+		_, _ = stdout.Write(output)
+	}
+
+	if *failOnDrift && report.HasDrift() {
+		return 3
+	}
 	return 0
 }
 

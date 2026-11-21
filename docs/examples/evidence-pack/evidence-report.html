@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>IRAP Evidence Pack - run-20261121T000000Z</title>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; color: #1b2430; background: #f7f9fc; margin: 0; padding: 24px; line-height: 1.5; }
+  .container { max-width: 1280px; margin: 0 auto; background: #ffffff; border: 1px solid #d9e2ec; border-radius: 8px; padding: 28px; }
+  h1, h2, h3 { color: #102a43; margin-top: 1.4em; }
+  h1 { margin-top: 0; border-bottom: 2px solid #d9e2ec; padding-bottom: 10px; }
+  .disclaimer { background: #f0f4f8; border-left: 4px solid #486581; padding: 12px 16px; margin: 16px 0; font-size: 0.92rem; }
+  .meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin: 16px 0; }
+  .card { background: #f8fafc; border: 1px solid #d9e2ec; border-radius: 6px; padding: 12px 16px; }
+  .card-label { font-size: 0.8rem; text-transform: uppercase; color: #627d98; letter-spacing: 0.04em; }
+  .card-value { font-size: 1.2rem; font-weight: 600; margin-top: 4px; word-break: break-all; }
+  .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin: 16px 0 24px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 0.88rem; }
+  th, td { border: 1px solid #d9e2ec; padding: 8px 10px; text-align: left; vertical-align: top; }
+  th { background: #f0f4f8; color: #102a43; font-weight: 600; }
+  code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.82rem; background: #f0f4f8; padding: 1px 4px; border-radius: 3px; word-break: break-all; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 0.78rem; font-weight: 600; text-transform: uppercase; }
+  .badge-pass { background: #e3f9e5; color: #1f7a38; }
+  .badge-fail { background: #ffe3e3; color: #ab091e; }
+  .badge-manual { background: #fff3c4; color: #8d2b0b; }
+  .badge-error { background: #e6e6ff; color: #3f2b96; }
+  .manual-card { border: 1px solid #f0b429; background: #fffdf5; border-radius: 6px; padding: 14px 16px; margin-bottom: 12px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>IRAP Evidence Pack: ASD Blueprint for Secure Cloud Drift Assessment</h1>
+  <div class="disclaimer"><strong>Disclaimer:</strong> Independent community project. Not produced, endorsed or supported by the Australian Signals Directorate (ASD), the Australian Cyber Security Centre (ACSC) or Microsoft.</div>
+
+  <div class="meta">
+    <div class="card"><div class="card-label">Run ID</div><div class="card-value"><code>run-20261121T000000Z</code></div></div>
+    <div class="card"><div class="card-label">Timestamp (UTC)</div><div class="card-value"><code>2026-11-21T00:00:00Z</code></div></div>
+    <div class="card"><div class="card-label">Tenant ID</div><div class="card-value"><code>00000000-0000-0000-0000-000000000000</code></div></div>
+    <div class="card"><div class="card-label">Blueprint Version</div><div class="card-value"><code>v1.4.0</code></div></div>
+  </div>
+
+  <h2>Executive Summary</h2>
+  <div class="summary-grid">
+    <div class="card"><div class="card-label">Total</div><div class="card-value">32</div></div>
+    <div class="card"><div class="card-label">Pass</div><div class="card-value">30</div></div>
+    <div class="card"><div class="card-label">Fail</div><div class="card-value">0</div></div>
+    <div class="card"><div class="card-label">Manual</div><div class="card-value">2</div></div>
+    <div class="card"><div class="card-label">Error</div><div class="card-value">0</div></div>
+  </div>
+
+  <h2>Setting Evaluation Results</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Setting ID</th>
+        <th>Section</th>
+        <th>Status</th>
+        <th>Severity</th>
+        <th>ISM Controls</th>
+        <th>Read-Only Query</th>
+        <th>Response SHA-256</th>
+        <th>Finding</th>
+      </tr>
+    </thead>
+    <tbody>
+      
+      <tr>
+        <td><code>ENTRA-PROP-001</code></td>
+        <td>Entra ID / Identity properties</td>
+        <td><span class="badge badge-pass">pass</span></td>
+        <td><code>high</code></td>
+        <td>ISM-1507, ISM-1679</td>
+        <td><code>GET /v1.0/policies/identitySecurityDefaultsEnforcementPolicy</code></td>
+        <td><code>9c0982f319c6d8f3ec1410de249964f95de5b963a8b6fa9f4c08496e860a673b</code></td>
+        <td>isEnabled equals expected value false</td>
+      </tr>
+      
+      <tr>
+        <td><code>ENTRA-PROP-002</code></td>
+        <td>Entra ID / Identity properties</td>
+        <td><span class="badge badge-pass">pass</span></td>
+        <td><code>high</code></td>
+        <td>ISM-1577</td>
+        <td><code>GET /v1.0/organization</code></td>
+        <td><code>b3c8f35971ec1a8414ae71cc9a3a81f1d9a79f24009c47b9a37a168c512286e0</code></td>
+        <td>tenant countryLetterCode is AU</td>
+      </tr>
+      
+      <tr>
+        <td><code>ENTRA-USER-001</code></td>
+        <td>Entra ID / User settings</td>
+        <td><span class="badge badge-pass">pass</span></td>
+        <td><code>high</code></td>
+        <td>ISM-1507</td>
+        <td><code>GET /v1.0/policies/authorizationPolicy</code></td>
+        <td><code>6c629dc8db336c8f0b80447071ed6851ed2787b03e314cf661bf82d9744b1c64</code></td>
+        <td>defaultUserRolePermissions.allowedToCreateApps equals expected value false</td>
+      </tr>
+      
+      <tr>
+        <td><code>ENTRA-USER-002</code></td>
+        <td>Entra ID / User settings</td>
+        <td><span class="badge badge-pass">pass</span></td>
+        <td><code>medium</code></td>
+        <td>ISM-1507</td>
+        <td><code>GET /v1.0/policies/authorizationPolicy</code></td>
+        <td><code>6c629dc8db336c8f0b80447071ed6851ed2787b03e314cf661bf82d9744b1c64</code></td>
+        <td>defaultUserRolePermissions.allowedToCreateTenants equals expected value false</td>
+      </tr>
+      
+      <tr>
+        <td><code>ENTRA-USER-003</code></td>
+        <td>Entra ID / User settings</td>
+        <td><span class="badge badge-pass">pass</span></td>
+        <td><code>medium</code></td>
+        <td>ISM-0407</td>
+        <td><code>GET /v1.0/policies/authorizationPolicy</code></td>
+        <td><code>6c629dc8db336c8f0b80447071ed6851ed2787b03e314cf661bf82d9744b1c64</code></td>
+        <td>defaultUserRolePermissions.allowedToCreateSecurityGroups equals expected value false</td>
+      </tr>
+      
+      <tr>
+        <td><code>ENTRA-USER-004</code></td>
+        <td>Entra ID / User settings</td>
+        <td><span class="badge badge-pass">pass</span></td>
+        <td><code>high</code></td>
+        <td>ISM-0407, ISM-1405</td>
+        <td><code>GET /v1.0/policies/authorizationPolicy</code></td>
+        <td><code>6c629dc8db336c8f0b80447071ed6851ed2787b03e314cf661bf82d9744b1c64</code></td>
+        <td>guestUserRoleId equals expected value 2af84b1e-32c8-42b7-82bc-daa82404023b</td>
+      </tr>
+      
+      <tr>
+        <td><code>ENTRA-USER-005</code></td>
+        <td>Entra ID / External identities</td>
+        <td><span class="badge badge-pass">pass</span></td>
+        <td><code>high</code></td>
+        <td>ISM-0407</td>
+        <td><code>GET /v1.0/policies/authorizationPolicy</code></td>
+        <td><code>6c629dc8db336c8f0b80447071ed6851ed2787b03e314cf661bf82d9744b1c64</code></td>
+        <td>allowInvitesFrom (adminsAndGuestInviters) is in allowed set [none adminsAndGuestInviters]</td>
+      </tr>
+      
+      <tr>
+        <td><code>ENTRA-USER-006</code></td>
+        <td>Entra ID / User settings</td>
+        <td><span class="badge badge-pass">pass</span></td>
+        <td><code>medium</code></td>
+        <td>ISM-0407</td>
+        <td><code>GET /v1.0/policies/authorizationPolicy</code></td>
+        <td><code>6c629dc8db336c8f0b80447071ed6851ed2787b03e314cf661bf82d9744b1c64</code></td>
+        <td>blockMsolPowerShell equals expected value true</td>
+      </tr>
+      
+      <tr>
+        <td><code>ENTRA-USER-007</code></td>
+        <td>Entra ID / User settings</td>
+        <td><span class="badge badge-pass">pass</span></td>
+        <td><code>medium</code></td>
+        <td>ISM-0407</td>
+        <td><code>GET /beta/policies/authorizationPolicy</code></td>
+        <td><code>7fce34095353383a529b3a3899bb2932e91176d43c5c8f62feaf47628ae32b79</code></td>
+        <td>defaultUserRolePermissions.allowedToReadOtherUsers equals expected value false</td>
+      </tr>
+      
+      <tr>
+        <td><code>ENTRA-APP-001</code></td>
+        <td>Entra ID / Enterprise applications / Consent and permissions</td>
+        <td><span class="badge badge-pass">pass</span></td>
+        <td><code>high</code></td>
+        <td>ISM-1507, ISM-1657</td>
+        <td><code>GET /v1.0/policies/authorizationPolicy</code></td>
+        <td><code>6c629dc8db336c8f0b80447071ed6851ed2787b03e314cf661bf82d9744b1c64</code></td>
+        <td>defaultUserRolePermissions.permissionGrantPoliciesAssigned is empty (user consent disabled)</td>
+      </tr>
+      
+      <tr>
+        <td><code>ENTRA-APP-002</code></td>
+        <td>Entra ID / Enterprise applications / Consent and permissions</td>
+        <td><span class="badge badge-pass">pass</span></td>
+        <td><code>medium</code></td>
+        <td>ISM-1507</td>
+        <td><code>GET /v1.0/policies/adminConsentRequestPolicy</code></td>
+        <td><code>d918e54b28f1c27bf8498ef7a13ef906f7f3922e15a577ab3335fbcba5b09123</code></td>
+        <td>isEnabled equals expected value true</td>
+      </tr>
+      
+      <tr>
+        <td><code>ENTRA-DEV-001</code></td>
+        <td>Entra ID / Devices / Device settings</td>
+        <td><span class="badge badge-pass">pass</span></td>
+        <td><code>high</code></td>
+        <td>ISM-0445, ISM-1647</td>
+        <td><code>GET /beta/policies/deviceRegistrationPolicy</code></td>
+        <td><code>d0140ab97a50e3dfe0ac866b9a36c6b4d3601cf16b82f0b9510f04357485edae</code></td>
+        <td>localAdminPassword.isEnabled equals expected value true</td>
+      </tr>
+      
+      <tr>
+        <td><code>ENTRA-DEV-002</code></td>
+        <td>Entra ID / Devices / Device settings</td>
+        <td><span class="badge badge-pass">pass</span></td>
+        <td><code>medium</code></td>
+        <td>ISM-1507</td>
+        <td><code>GET /beta/policies/deviceRegistrationPolicy</code></td>
+        <td><code>d0140ab97a50e3dfe0ac866b9a36c6b4d3601cf16b82f0b9510f04357485edae</code></td>
+        <td>Entra join configured (#microsoft.graph.enumeratedDeviceRegistrationMembership) with userDeviceQuota=5</td>
+      </tr>
+      
+      <tr>
+        <td><code>ENTRA-DEV-003</code></td>
+        <td>Entra ID / Devices / Device settings</td>
+        <td><span class="badge badge-pass">pass</span></td>
+        <td><code>low</code></td>
+        <td>ISM-1507</td>
+        <td><code>GET /beta/policies/deviceRegistrationPolicy</code></td>
+        <td><code>d0140ab97a50e3dfe0ac866b9a36c6b4d3601cf16b82f0b9510f04357485edae</code></td>
+        <td>multiFactorAuthConfiguration (notRequired) is in allowed set [notRequired required]</td>
+      </tr>
+      
+      <tr>
+        <td><code>ENTRA-EXT-001</code></td>
+        <td>Entra ID / External identities / Cross-tenant access</td>
+        <td><span class="badge badge-pass">pass</span></td>
+        <td><code>high</code></td>
+        <td>ISM-0407, ISM-1507</td>
+        <td><code>GET /v1.0/policies/crossTenantAccessPolicy/default</code></td>
+        <td><code>ac078e19a7a118d3dcf6cd79d0038586385fc15f3ee6cdab314afd194212b953</code></td>
+        <td>default inbound B2B collaboration is blocked for users and applications</td>
+      </tr>
+      
+      <tr>
+        <td><code>ENTRA-GRP-001</code></td>
+        <td>Entra ID / Groups / General</td>
+        <td><span class="badge badge-pass">pass</span></td>
+        <td><code>medium</code></td>
+        <td>ISM-0407</td>
+        <td><code>GET /beta/settings</code></td>
+        <td><code>4098d893aa7df204b32a66ffc1c00dc07ece02b6d23848d880517d880a814a38</code></td>
+        <td>Group.Unified EnableGroupCreation is false</td>
+      </tr>
+      
+      <tr>
+        <td><code>ENTRA-AUTH-001</code></td>
+        <td>Entra ID / Protection / Authentication methods</td>
+        <td><span class="badge badge-pass">pass</span></td>
+        <td><code>critical</code></td>
+        <td>ISM-1679, ISM-1681</td>
+        <td><code>GET /v1.0/policies/authenticationMethodsPolicy</code></td>
+        <td><code>324735e2f0c468894563d60c86736d771497c531b5bf9f47010ba433f3ca5c9d</code></td>
+        <td>FIDO2 security key authentication method is enabled</td>
+      </tr>
+      
+      <tr>
+        <td><code>ENTRA-AUTH-002</code></td>
+        <td>Entra ID / Protection / Authentication methods</td>
+        <td><span class="badge badge-pass">pass</span></td>
+        <td><code>critical</code></td>
+        <td>ISM-1679, ISM-1681</td>
+        <td><code>GET /v1.0/policies/authenticationMethodsPolicy</code></td>
+        <td><code>324735e2f0c468894563d60c86736d771497c531b5bf9f47010ba433f3ca5c9d</code></td>
+        <td>SMS, Voice and Email OTP authentication methods are disabled</td>
+      </tr>
+      
+      <tr>
+        <td><code>ENTRA-AUTH-003</code></td>
+        <td>Entra ID / Protection / Authentication methods</td>
+        <td><span class="badge badge-pass">pass</span></td>
+        <td><code>medium</code></td>
+        <td>ISM-1679</td>
+        <td><code>GET /v1.0/policies/authenticationMethodsPolicy</code></td>
+        <td><code>324735e2f0c468894563d60c86736d771497c531b5bf9f47010ba433f3ca5c9d</code></td>
+        <td>TemporaryAccessPass enabled with maximumLifetimeInMinutes=480</td>
+      </tr>
+      
+      <tr>
+        <td><code>ENTRA-AUTH-004</code></td>
+        <td>Entra ID / Protection / Password protection</td>
+        <td><span class="badge badge-pass">pass</span></td>
+        <td><code>high</code></td>
+        <td>ISM-0421, ISM-1403</td>
+        <td><code>GET /beta/settings</code></td>
+        <td><code>4098d893aa7df204b32a66ffc1c00dc07ece02b6d23848d880517d880a814a38</code></td>
+        <td>custom banned password list enabled, smart lockout threshold=10, duration=60s</td>
+      </tr>
+      
+      <tr>
+        <td><code>ENTRA-AUTH-005</code></td>
+        <td>Entra ID / Protection / Authentication methods</td>
+        <td><span class="badge badge-pass">pass</span></td>
+        <td><code>medium</code></td>
+        <td>ISM-1679</td>
+        <td><code>GET /v1.0/policies/authenticationMethodsPolicy</code></td>
+        <td><code>324735e2f0c468894563d60c86736d771497c531b5bf9f47010ba433f3ca5c9d</code></td>
+        <td>systemCredentialPreferences.state equals expected value enabled</td>
+      </tr>
+      
+      <tr>
+        <td><code>ENTRA-CA-001</code></td>
+        <td>Entra ID / Conditional Access / Named locations</td>
+        <td><span class="badge badge-pass">pass</span></td>
+        <td><code>high</code></td>
+        <td>ISM-1507</td>
+        <td><code>GET /v1.0/identity/conditionalAccess/namedLocations</code></td>
+        <td><code>7f8c352d4c4f2a5df6a2e8ad2c1b97357664b0cd43fae0fecdc2b61a169ddd54</code></td>
+        <td>country named location &#34;Approved Countries - Australia&#34; includes AU and excludes unknown regions</td>
+      </tr>
+      
+      <tr>
+        <td><code>ENTRA-CA-002</code></td>
+        <td>Entra ID / Conditional Access / Policies</td>
+        <td><span class="badge badge-pass">pass</span></td>
+        <td><code>critical</code></td>
+        <td>ISM-1507, ISM-1680</td>
+        <td><code>GET /v1.0/identity/conditionalAccess/policies</code></td>
+        <td><code>6e932b8690878d7ceeb573ab4a4eff1ab75eb546dce763f0b3f6e76c7a562356</code></td>
+        <td>enabled policy &#34;BP - Block access via legacy authentication&#34; blocks legacy authentication</td>
+      </tr>
+      
+      <tr>
+        <td><code>ENTRA-CA-003</code></td>
+        <td>Entra ID / Conditional Access / Policies</td>
+        <td><span class="badge badge-pass">pass</span></td>
+        <td><code>critical</code></td>
+        <td>ISM-1679, ISM-1681</td>
+        <td><code>GET /v1.0/identity/conditionalAccess/policies</code></td>
+        <td><code>6e932b8690878d7ceeb573ab4a4eff1ab75eb546dce763f0b3f6e76c7a562356</code></td>
+        <td>enabled policy &#34;BP - Require strong phishing-resistant authentication&#34; requires strong authentication for all users</td>
+      </tr>
+      
+      <tr>
+        <td><code>ENTRA-CA-004</code></td>
+        <td>Entra ID / Conditional Access / Policies</td>
+        <td><span class="badge badge-pass">pass</span></td>
+        <td><code>high</code></td>
+        <td>ISM-1507, ISM-1546</td>
+        <td><code>GET /v1.0/identity/conditionalAccess/policies</code></td>
+        <td><code>6e932b8690878d7ceeb573ab4a4eff1ab75eb546dce763f0b3f6e76c7a562356</code></td>
+        <td>enabled policy &#34;BP - Require compliant devices&#34; enforces compliantDevice</td>
+      </tr>
+      
+      <tr>
+        <td><code>ENTRA-CA-005</code></td>
+        <td>Entra ID / Conditional Access / Policies</td>
+        <td><span class="badge badge-pass">pass</span></td>
+        <td><code>critical</code></td>
+        <td>ISM-1507</td>
+        <td><code>GET /v1.0/identity/conditionalAccess/policies</code></td>
+        <td><code>6e932b8690878d7ceeb573ab4a4eff1ab75eb546dce763f0b3f6e76c7a562356</code></td>
+        <td>enabled policy &#34;BP - Block high-risk users&#34; blocks high-risk users</td>
+      </tr>
+      
+      <tr>
+        <td><code>ENTRA-CA-006</code></td>
+        <td>Entra ID / Conditional Access / Policies</td>
+        <td><span class="badge badge-pass">pass</span></td>
+        <td><code>critical</code></td>
+        <td>ISM-1507</td>
+        <td><code>GET /v1.0/identity/conditionalAccess/policies</code></td>
+        <td><code>6e932b8690878d7ceeb573ab4a4eff1ab75eb546dce763f0b3f6e76c7a562356</code></td>
+        <td>enabled policy &#34;BP - Block high-risk sign-ins&#34; blocks high-risk sign-ins</td>
+      </tr>
+      
+      <tr>
+        <td><code>ENTRA-CA-007</code></td>
+        <td>Entra ID / Conditional Access / Policies</td>
+        <td><span class="badge badge-pass">pass</span></td>
+        <td><code>high</code></td>
+        <td>ISM-1507</td>
+        <td><code>GET /v1.0/identity/conditionalAccess/policies</code></td>
+        <td><code>6e932b8690878d7ceeb573ab4a4eff1ab75eb546dce763f0b3f6e76c7a562356</code></td>
+        <td>enabled policy &#34;BP - Block unapproved countries&#34; blocks access outside approved named locations</td>
+      </tr>
+      
+      <tr>
+        <td><code>ENTRA-CA-008</code></td>
+        <td>Entra ID / Conditional Access / Policies</td>
+        <td><span class="badge badge-pass">pass</span></td>
+        <td><code>high</code></td>
+        <td>ISM-0445, ISM-1507</td>
+        <td><code>GET /v1.0/identity/conditionalAccess/policies</code></td>
+        <td><code>6e932b8690878d7ceeb573ab4a4eff1ab75eb546dce763f0b3f6e76c7a562356</code></td>
+        <td>enabled policy &#34;BP - Limit administrator sessions&#34; limits admin sessions (4 hours, persistentBrowser=never)</td>
+      </tr>
+      
+      <tr>
+        <td><code>ENTRA-PIM-001</code></td>
+        <td>Entra ID / Identity governance / Privileged Identity Management</td>
+        <td><span class="badge badge-pass">pass</span></td>
+        <td><code>critical</code></td>
+        <td>ISM-0445, ISM-1175</td>
+        <td><code>GET /v1.0/roleManagement/directory/roleAssignmentScheduleInstances</code></td>
+        <td><code>131d282f3ec7e97077aa03d0519ef2014d36cdb9d0a6f925070b9b4631e6e936</code></td>
+        <td>2 permanent active Global Administrator assignment(s) found (maximum 2)</td>
+      </tr>
+      
+      <tr>
+        <td><code>ENTRA-BG-001</code></td>
+        <td>Entra ID / Users / Break-glass accounts</td>
+        <td><span class="badge badge-manual">manual</span></td>
+        <td><code>high</code></td>
+        <td>ISM-0445, ISM-1175</td>
+        <td><code>manual</code></td>
+        <td>N/A</td>
+        <td>Operational credential storage, physical vaulting, alerting rules and periodic break-glass testing records cannot be verified solely through Microsoft Graph.</td>
+      </tr>
+      
+      <tr>
+        <td><code>ENTRA-SSPR-001</code></td>
+        <td>Entra ID / Protection / Password reset</td>
+        <td><span class="badge badge-manual">manual</span></td>
+        <td><code>low</code></td>
+        <td>ISM-0421</td>
+        <td><code>manual</code></td>
+        <td>N/A</td>
+        <td>Microsoft Entra self-service password reset portal notification and customisation settings have no full GA read-only Microsoft Graph API.</td>
+      </tr>
+      
+    </tbody>
+  </table>
+
+  <h2>ISM Control Mapping Summary</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>ISM Control</th>
+        <th>Pass</th>
+        <th>Fail</th>
+        <th>Manual</th>
+        <th>Error</th>
+        <th>Settings</th>
+      </tr>
+    </thead>
+    <tbody>
+      
+      <tr>
+        <td><code>ISM-0407</code></td>
+        <td>7</td>
+        <td>0</td>
+        <td>0</td>
+        <td>0</td>
+        <td>ENTRA-EXT-001, ENTRA-GRP-001, ENTRA-USER-003, ENTRA-USER-004, ENTRA-USER-005, ENTRA-USER-006, ENTRA-USER-007</td>
+      </tr>
+      
+      <tr>
+        <td><code>ISM-0421</code></td>
+        <td>1</td>
+        <td>0</td>
+        <td>1</td>
+        <td>0</td>
+        <td>ENTRA-AUTH-004, ENTRA-SSPR-001</td>
+      </tr>
+      
+      <tr>
+        <td><code>ISM-0445</code></td>
+        <td>3</td>
+        <td>0</td>
+        <td>1</td>
+        <td>0</td>
+        <td>ENTRA-BG-001, ENTRA-CA-008, ENTRA-DEV-001, ENTRA-PIM-001</td>
+      </tr>
+      
+      <tr>
+        <td><code>ISM-1175</code></td>
+        <td>1</td>
+        <td>0</td>
+        <td>1</td>
+        <td>0</td>
+        <td>ENTRA-BG-001, ENTRA-PIM-001</td>
+      </tr>
+      
+      <tr>
+        <td><code>ISM-1403</code></td>
+        <td>1</td>
+        <td>0</td>
+        <td>0</td>
+        <td>0</td>
+        <td>ENTRA-AUTH-004</td>
+      </tr>
+      
+      <tr>
+        <td><code>ISM-1405</code></td>
+        <td>1</td>
+        <td>0</td>
+        <td>0</td>
+        <td>0</td>
+        <td>ENTRA-USER-004</td>
+      </tr>
+      
+      <tr>
+        <td><code>ISM-1507</code></td>
+        <td>15</td>
+        <td>0</td>
+        <td>0</td>
+        <td>0</td>
+        <td>ENTRA-APP-001, ENTRA-APP-002, ENTRA-CA-001, ENTRA-CA-002, ENTRA-CA-004, ENTRA-CA-005, ENTRA-CA-006, ENTRA-CA-007, ENTRA-CA-008, ENTRA-DEV-002, ENTRA-DEV-003, ENTRA-EXT-001, ENTRA-PROP-001, ENTRA-USER-001, ENTRA-USER-002</td>
+      </tr>
+      
+      <tr>
+        <td><code>ISM-1546</code></td>
+        <td>1</td>
+        <td>0</td>
+        <td>0</td>
+        <td>0</td>
+        <td>ENTRA-CA-004</td>
+      </tr>
+      
+      <tr>
+        <td><code>ISM-1577</code></td>
+        <td>1</td>
+        <td>0</td>
+        <td>0</td>
+        <td>0</td>
+        <td>ENTRA-PROP-002</td>
+      </tr>
+      
+      <tr>
+        <td><code>ISM-1647</code></td>
+        <td>1</td>
+        <td>0</td>
+        <td>0</td>
+        <td>0</td>
+        <td>ENTRA-DEV-001</td>
+      </tr>
+      
+      <tr>
+        <td><code>ISM-1657</code></td>
+        <td>1</td>
+        <td>0</td>
+        <td>0</td>
+        <td>0</td>
+        <td>ENTRA-APP-001</td>
+      </tr>
+      
+      <tr>
+        <td><code>ISM-1679</code></td>
+        <td>6</td>
+        <td>0</td>
+        <td>0</td>
+        <td>0</td>
+        <td>ENTRA-AUTH-001, ENTRA-AUTH-002, ENTRA-AUTH-003, ENTRA-AUTH-005, ENTRA-CA-003, ENTRA-PROP-001</td>
+      </tr>
+      
+      <tr>
+        <td><code>ISM-1680</code></td>
+        <td>1</td>
+        <td>0</td>
+        <td>0</td>
+        <td>0</td>
+        <td>ENTRA-CA-002</td>
+      </tr>
+      
+      <tr>
+        <td><code>ISM-1681</code></td>
+        <td>3</td>
+        <td>0</td>
+        <td>0</td>
+        <td>0</td>
+        <td>ENTRA-AUTH-001, ENTRA-AUTH-002, ENTRA-CA-003</td>
+      </tr>
+      
+    </tbody>
+  </table>
+
+  <h2>Manual Items Checklist for IRAP Assessor</h2>
+  
+    
+    <div class="manual-card">
+      <h3><code>ENTRA-BG-001</code>: Emergency access account operational governance</h3>
+      <p><strong>Section:</strong> Entra ID / Users / Break-glass accounts | <strong>Severity:</strong> <code>high</code> | <strong>ISM Controls:</strong> ISM-0445, ISM-1175</p>
+      <p><strong>Reason manual:</strong> Operational credential storage, physical vaulting, alerting rules and periodic break-glass testing records cannot be verified solely through Microsoft Graph.</p>
+      <p><strong>Verification guidance:</strong> Confirm two cloud-only Global Administrator emergency accounts exist, are excluded from Conditional Access policies, have sign-in alert rules configured in Sentinel or Azure Monitor, and have current test logs.</p>
+    </div>
+    
+    <div class="manual-card">
+      <h3><code>ENTRA-SSPR-001</code>: Self-service password reset notifications and customisation</h3>
+      <p><strong>Section:</strong> Entra ID / Protection / Password reset | <strong>Severity:</strong> <code>low</code> | <strong>ISM Controls:</strong> ISM-0421</p>
+      <p><strong>Reason manual:</strong> Microsoft Entra self-service password reset portal notification and customisation settings have no full GA read-only Microsoft Graph API.</p>
+      <p><strong>Verification guidance:</strong> Inspect Entra admin center -&gt; Protection -&gt; Password reset (Properties, Authentication methods, Registration and Notifications) and record evidence screenshots for the IRAP assessor.</p>
+    </div>
+    
+  
+</div>
+</body>
+</html>

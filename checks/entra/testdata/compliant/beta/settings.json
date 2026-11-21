@@ -1,0 +1,19 @@
+{
+  "@odata.context": "https://graph.microsoft.com/beta/$metadata#settings",
+  "value": [
+    {
+      "displayName": "Group.Unified",
+      "values": [
+        {"name": "EnableGroupCreation", "value": "False"}
+      ]
+    },
+    {
+      "displayName": "Password Rule Settings",
+      "values": [
+        {"name": "EnableBannedPasswordCheck", "value": "True"},
+        {"name": "LockoutThreshold", "value": "10"},
+        {"name": "LockoutDurationInSeconds", "value": "60"}
+      ]
+    }
+  ]
+}

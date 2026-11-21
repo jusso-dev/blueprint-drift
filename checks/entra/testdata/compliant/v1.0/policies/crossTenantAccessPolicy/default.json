@@ -1,0 +1,13 @@
+{
+  "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#policies/crossTenantAccessPolicy/default/$entity",
+  "b2bCollaborationInbound": {
+    "usersAndGroups": {
+      "accessType": "blocked",
+      "targets": [{"target": "AllUsers", "targetType": "user"}]
+    },
+    "applications": {
+      "accessType": "blocked",
+      "targets": [{"target": "AllApplications", "targetType": "application"}]
+    }
+  }
+}

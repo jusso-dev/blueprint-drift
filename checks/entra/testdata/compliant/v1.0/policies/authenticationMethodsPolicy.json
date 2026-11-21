@@ -1,0 +1,30 @@
+{
+  "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#policies/authenticationMethodsPolicy/$entity",
+  "systemCredentialPreferences": {
+    "state": "enabled"
+  },
+  "authenticationMethodConfigurations": [
+    {
+      "id": "Fido2",
+      "state": "enabled"
+    },
+    {
+      "id": "Sms",
+      "state": "disabled"
+    },
+    {
+      "id": "Voice",
+      "state": "disabled"
+    },
+    {
+      "id": "Email",
+      "state": "disabled"
+    },
+    {
+      "id": "TemporaryAccessPass",
+      "state": "enabled",
+      "defaultLifetimeInMinutes": 60,
+      "maximumLifetimeInMinutes": 480
+    }
+  ]
+}

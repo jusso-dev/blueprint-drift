@@ -1,0 +1,14 @@
+{
+  "@odata.context": "https://graph.microsoft.com/beta/$metadata#policies/deviceRegistrationPolicy/$entity",
+  "multiFactorAuthConfiguration": "notRequired",
+  "userDeviceQuota": 5,
+  "azureADJoin": {
+    "allowedToJoin": {
+      "@odata.type": "#microsoft.graph.enumeratedDeviceRegistrationMembership",
+      "groups": ["00000000-0000-0000-0000-000000000010"]
+    }
+  },
+  "localAdminPassword": {
+    "isEnabled": true
+  }
+}

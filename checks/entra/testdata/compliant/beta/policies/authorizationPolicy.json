@@ -1,0 +1,7 @@
+{
+  "@odata.context": "https://graph.microsoft.com/beta/$metadata#policies/authorizationPolicy/$entity",
+  "id": "authorizationPolicy",
+  "defaultUserRolePermissions": {
+    "allowedToReadOtherUsers": false
+  }
+}

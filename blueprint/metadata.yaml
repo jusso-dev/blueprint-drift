@@ -1,0 +1,15 @@
+blueprint:
+  name: ASD Blueprint for Secure Cloud
+  version: v1.4.0
+  source_url: https://blueprint.asd.gov.au/
+  repository_url: https://github.com/ASD-Blueprint/ASD-Blueprint-for-Secure-Cloud
+  commit_sha: a6e1e5f95e6051f23d2e7d1148c8fd57a6614000
+  commit_date: "2026-09-18"
+  retrieved_date: "2026-11-21"
+  frameworks:
+    ism_url: https://www.cyber.gov.au/resources-business-and-government/essential-cyber-security/ism
+    essential_eight_url: https://www.cyber.gov.au/resources-business-and-government/essential-cyber-security/essential-eight
+  disclaimer: >-
+    Independent community project. Not produced, endorsed or supported by the
+    Australian Signals Directorate (ASD), the Australian Cyber Security Centre
+    (ACSC) or Microsoft.

@@ -1,0 +1,23 @@
+{
+  "@odata.context": "https://graph.microsoft.com/beta/$metadata#deviceManagement/configurationPolicies",
+  "value": [
+    {
+      "id": "00000000-0000-0000-0000-000000000951",
+      "name": "BP - Endpoint Security Antivirus",
+      "isAssigned": true,
+      "templateReference": {"templateFamily": "endpointSecurityAntivirus"}
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000952",
+      "name": "BP - Endpoint Security Firewall",
+      "isAssigned": true,
+      "templateReference": {"templateFamily": "endpointSecurityFirewall"}
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000953",
+      "name": "BP - Endpoint Detection and Response",
+      "isAssigned": true,
+      "templateReference": {"templateFamily": "endpointSecurityEndpointDetectionAndResponse"}
+    }
+  ]
+}

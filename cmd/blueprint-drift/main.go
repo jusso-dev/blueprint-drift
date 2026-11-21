@@ -11,6 +11,7 @@ import (
 
 	"github.com/jusso-dev/blueprint-drift/checks/entra"
 	"github.com/jusso-dev/blueprint-drift/checks/intune"
+	"github.com/jusso-dev/blueprint-drift/checks/m365"
 	"github.com/jusso-dev/blueprint-drift/evidence"
 	"github.com/jusso-dev/blueprint-drift/src/blueprint"
 	"github.com/jusso-dev/blueprint-drift/src/engine"
@@ -177,6 +178,7 @@ func runScan(args []string, stdout, stderr io.Writer) int {
 	reg := engine.NewRegistry()
 	entra.Register(reg)
 	intune.Register(reg)
+	m365.Register(reg)
 
 	runner := &engine.Runner{
 		Client:   client,

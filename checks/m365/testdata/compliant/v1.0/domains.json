@@ -1,0 +1,15 @@
+{
+  "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#domains",
+  "value": [
+    {
+      "id": "example.onmicrosoft.com",
+      "isDefault": false,
+      "isVerified": true
+    },
+    {
+      "id": "agency.example.gov.au",
+      "isDefault": true,
+      "isVerified": true
+    }
+  ]
+}

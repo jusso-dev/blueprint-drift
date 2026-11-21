@@ -1,0 +1,300 @@
+schema_version: "1.0"
+blueprint_version: "v1.4.0"
+domain: "defender"
+settings:
+  - id: "DEF-SCORE-001"
+    section: "Microsoft Defender / Posture"
+    title: "Microsoft Secure Score telemetry active and monitored"
+    description: >-
+      Microsoft Secure Score data must be available via Microsoft Graph so
+      tenant security posture can be tracked continuously.
+    severity: "medium"
+    expected:
+      operator: "policy_exists"
+      rule: "defender_secure_score_present"
+      value: true
+    api_source:
+      kind: "graph"
+      version: "v1.0"
+      method: "GET"
+      endpoint: "/security/secureScores"
+      permissions:
+        - "SecurityEvents.Read.All"
+      junction_operation: "graph.security.secure_scores.list"
+    ism_controls:
+      - "ISM-1405"
+    references:
+      - "https://blueprint.asd.gov.au/configuration/defender/"
+      - "https://learn.microsoft.com/en-us/graph/api/security-list-securescores?view=graph-rest-1.0"
+
+  - id: "DEF-SCORE-002"
+    section: "Microsoft Defender / Posture"
+    title: "Secure Score control profiles audited with no undocumented risk-ignored items"
+    description: >-
+      Secure Score control profiles must be retrievable and any ignored control
+      state must carry an explicit comment documenting risk acceptance.
+    severity: "medium"
+    expected:
+      operator: "policy_exists"
+      rule: "defender_control_profiles_audited"
+      value: true
+    api_source:
+      kind: "graph"
+      version: "v1.0"
+      method: "GET"
+      endpoint: "/security/secureScoreControlProfiles"
+      permissions:
+        - "SecurityEvents.Read.All"
+      junction_operation: "graph.security.secure_score_control_profiles.list"
+    ism_controls:
+      - "ISM-1405"
+    references:
+      - "https://blueprint.asd.gov.au/configuration/defender/"
+      - "https://learn.microsoft.com/en-us/graph/api/security-list-securescorecontrolprofiles?view=graph-rest-1.0"
+
+  - id: "DEF-MDE-001"
+    section: "Microsoft Defender / Endpoints / Device management"
+    title: "Microsoft Defender for Endpoint integration with Intune enabled"
+    description: >-
+      The Microsoft Defender for Endpoint Mobile Threat Defense connector must
+      be enabled and linked with Intune for Windows compliance evaluation.
+    severity: "high"
+    expected:
+      operator: "policy_exists"
+      rule: "defender_mde_connector_active"
+      value: true
+    api_source:
+      kind: "graph"
+      version: "beta"
+      method: "GET"
+      endpoint: "/deviceManagement/mobileThreatDefenseConnectors"
+      permissions:
+        - "DeviceManagementConfiguration.Read.All"
+    ism_controls:
+      - "ISM-1416"
+      - "ISM-1546"
+    references:
+      - "https://blueprint.asd.gov.au/configuration/defender/system/settings/endpoints/device-management/"
+      - "https://learn.microsoft.com/en-us/graph/api/intune-onboarding-mobilethreatdefenseconnector-list?view=graph-rest-beta"
+
+  - id: "DEF-MDE-002"
+    section: "Microsoft Defender / Endpoints / Configuration management"
+    title: "Defender endpoint security antivirus, firewall and EDR policies deployed"
+    description: >-
+      Assigned Intune Endpoint Security policies for Antivirus, Firewall and
+      Endpoint Detection and Response (EDR) must be deployed.
+    severity: "critical"
+    expected:
+      operator: "policy_exists"
+      rule: "defender_endpoint_security_policies"
+      value: true
+    api_source:
+      kind: "graph"
+      version: "beta"
+      method: "GET"
+      endpoint: "/deviceManagement/configurationPolicies"
+      permissions:
+        - "DeviceManagementConfiguration.Read.All"
+    ism_controls:
+      - "ISM-1416"
+      - "ISM-1485"
+    references:
+      - "https://blueprint.asd.gov.au/configuration/defender/endpoints/configuration-management/endpoint-security-policies/"
+      - "https://learn.microsoft.com/en-us/mem/intune/protect/endpoint-security"
+
+  - id: "DEF-MDE-003"
+    section: "Microsoft Defender / XDR Incidents"
+    title: "Microsoft Defender XDR incident visibility enabled via Graph Security"
+    description: >-
+      The Microsoft Graph Security incidents endpoint must be accessible for
+      continuous security operations monitoring and triage.
+    severity: "medium"
+    expected:
+      operator: "policy_exists"
+      rule: "defender_incidents_visible"
+      value: true
+    api_source:
+      kind: "graph"
+      version: "v1.0"
+      method: "GET"
+      endpoint: "/security/incidents"
+      permissions:
+        - "SecurityIncident.Read.All"
+      junction_operation: "graph.security.incidents.list"
+    ism_controls:
+      - "ISM-0123"
+      - "ISM-1405"
+    references:
+      - "https://blueprint.asd.gov.au/configuration/defender/"
+      - "https://learn.microsoft.com/en-us/graph/api/security-list-incidents?view=graph-rest-1.0"
+
+  - id: "DEF-MDO-001"
+    section: "Microsoft Defender / Email and collaboration / Safe Attachments"
+    title: "Defender for Office 365 Safe Attachments global settings and policy enabled"
+    description: >-
+      Safe Attachments must be enabled for SharePoint, OneDrive and Teams with a
+      Blueprint Safe Attachments policy active for email.
+    severity: "high"
+    expected:
+      operator: "manual"
+      value: "EnableATPForSPOTeamsODB: true and active Safe Attachments policy"
+    api_source:
+      kind: "manual"
+      manual_reason: >-
+        Defender for Office 365 Safe Attachments policies have no public read-only
+        Microsoft Graph API; requires ExchangeOnlineManagement PowerShell.
+      manual_guidance: >-
+        Run Get-AtpPolicyForO365 and Get-SafeAttachmentPolicy in Exchange Online
+        PowerShell.
+    ism_controls:
+      - "ISM-0263"
+      - "ISM-1416"
+    references:
+      - "https://blueprint.asd.gov.au/configuration/defender/email-and-collaboration/policies-and-rules/threat-policies/safe-attachments/global-settings/"
+      - "https://learn.microsoft.com/en-us/defender-office-365/safe-attachments-about"
+
+  - id: "DEF-MDO-002"
+    section: "Microsoft Defender / Email and collaboration / Safe Links"
+    title: "Defender for Office 365 Safe Links policy enabled"
+    description: >-
+      Safe Links must be enabled for email, Teams and Office applications with
+      real-time URL scanning and click-through blocked.
+    severity: "high"
+    expected:
+      operator: "manual"
+      value: "Safe Links enabled for email, Teams and Office with DoNotAllowClickThrough: true"
+    api_source:
+      kind: "manual"
+      manual_reason: >-
+        Defender for Office 365 Safe Links policies are only exposed via
+        ExchangeOnlineManagement PowerShell or the Defender portal.
+      manual_guidance: >-
+        Run Get-SafeLinksPolicy and Get-SafeLinksRule in Exchange Online
+        PowerShell.
+    ism_controls:
+      - "ISM-0263"
+    references:
+      - "https://blueprint.asd.gov.au/configuration/defender/email-and-collaboration/policies-and-rules/threat-policies/safe-links/safe-links-policy/"
+      - "https://learn.microsoft.com/en-us/defender-office-365/safe-links-about"
+
+  - id: "DEF-MDO-003"
+    section: "Microsoft Defender / Email and collaboration / Quarantine"
+    title: "Quarantine policy restricts user self-release of malware and high-confidence phishing"
+    description: >-
+      Quarantine policies must require administrator approval before releasing
+      malware or high-confidence phishing messages.
+    severity: "high"
+    expected:
+      operator: "manual"
+      value: "AdminOnlyAccessPolicy applied to malware and high-confidence phishing"
+    api_source:
+      kind: "manual"
+      manual_reason: >-
+        Quarantine policies are only exposed via ExchangeOnlineManagement
+        PowerShell.
+      manual_guidance: >-
+        Run Get-QuarantinePolicy and verify EndUserQuarantinePermissionsValue
+        blocks direct user release for high-risk verdicts.
+    ism_controls:
+      - "ISM-0263"
+    references:
+      - "https://blueprint.asd.gov.au/configuration/defender/email-and-collaboration/policies-and-rules/threat-policies/quarantine-policy/quarantine-policy/"
+      - "https://learn.microsoft.com/en-us/defender-office-365/quarantine-policies"
+
+  - id: "DEF-MDO-004"
+    section: "Microsoft Defender / System settings / Email and collaboration"
+    title: "User reported message settings configured"
+    description: >-
+      User-reported suspicious email settings must route submissions to both the
+      organisational security operations mailbox and Microsoft.
+    severity: "low"
+    expected:
+      operator: "manual"
+      value: "User reported settings route to internal SecOps mailbox and Microsoft"
+    api_source:
+      kind: "manual"
+      manual_reason: >-
+        User-reported submission settings require ExchangeOnlineManagement
+        PowerShell (Get-ReportSubmissionPolicy) or Microsoft Defender portal review.
+      manual_guidance: >-
+        Run Get-ReportSubmissionPolicy or inspect Defender portal -> Settings ->
+        Email and collaboration -> User reported settings.
+    ism_controls:
+      - "ISM-0123"
+    references:
+      - "https://blueprint.asd.gov.au/configuration/defender/system/settings/email-and-collaboration/user-reported-settings/"
+      - "https://learn.microsoft.com/en-us/defender-office-365/submissions-user-reported-messages-custom-mailbox"
+
+  - id: "DEF-MDO-005"
+    section: "Microsoft Defender / System settings / Email and collaboration"
+    title: "Microsoft Teams protection settings enabled in Defender"
+    description: >-
+      Zero-hour auto purge (ZAP) for Microsoft Teams and Defender protection for
+      Teams messages must be enabled.
+    severity: "medium"
+    expected:
+      operator: "manual"
+      value: "Teams ZAP and Defender for Office 365 Teams protection enabled"
+    api_source:
+      kind: "manual"
+      manual_reason: >-
+        Microsoft Teams protection toggles in Defender have no public read-only
+        Microsoft Graph API.
+      manual_guidance: >-
+        Inspect Microsoft Defender portal -> Settings -> Email and collaboration
+        -> Microsoft Teams protection.
+    ism_controls:
+      - "ISM-1416"
+    references:
+      - "https://blueprint.asd.gov.au/configuration/defender/system/settings/email-and-collaboration/microsoft-teams-protection/"
+      - "https://learn.microsoft.com/en-us/defender-office-365/mdo-support-for-teams-about"
+
+  - id: "DEF-MDE-004"
+    section: "Microsoft Defender / System settings / Endpoints"
+    title: "Defender for Endpoint advanced features enabled"
+    description: >-
+      Tamper protection, automated investigation, EDR in block mode and Web
+      Content Filtering must be enabled in Defender for Endpoint settings.
+    severity: "high"
+    expected:
+      operator: "manual"
+      value: "Tamper protection, EDR block mode and automated investigation enabled"
+    api_source:
+      kind: "manual"
+      manual_reason: >-
+        Defender for Endpoint portal advanced feature toggles have no public
+        read-only Microsoft Graph API.
+      manual_guidance: >-
+        Inspect Microsoft Defender portal -> Settings -> Endpoints -> General ->
+        Advanced features and capture configuration evidence.
+    ism_controls:
+      - "ISM-1416"
+      - "ISM-1485"
+    references:
+      - "https://blueprint.asd.gov.au/configuration/defender/system/settings/endpoints/general/"
+      - "https://learn.microsoft.com/en-us/defender-endpoint/advanced-features"
+
+  - id: "DEF-MDA-001"
+    section: "Microsoft Defender / System settings / Cloud Apps"
+    title: "Defender for Cloud Apps Conditional Access App Control configured"
+    description: >-
+      Session and access policies in Defender for Cloud Apps must integrate with
+      Entra Conditional Access for protected cloud applications.
+    severity: "medium"
+    expected:
+      operator: "manual"
+      value: "Conditional Access App Control session policies active"
+    api_source:
+      kind: "manual"
+      manual_reason: >-
+        Defender for Cloud Apps session policy settings are managed in the
+        Defender portal or via separate Cloud Apps API tokens rather than
+        standard Microsoft Graph.
+      manual_guidance: >-
+        Inspect Microsoft Defender portal -> Settings -> Cloud Apps ->
+        Conditional Access App Control and verify connected apps and policies.
+    ism_controls:
+      - "ISM-1084"
+    references:
+      - "https://blueprint.asd.gov.au/configuration/defender/system/settings/cloud-apps/conditional-access-app-control/"
+      - "https://learn.microsoft.com/en-us/defender-cloud-apps/proxy-intro-aad"

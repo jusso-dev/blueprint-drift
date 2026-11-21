@@ -1,0 +1,13 @@
+{
+  "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#admin/sharepoint/settings/$entity",
+  "sharingCapability": "existingExternalUserSharingOnly",
+  "sharingDomainRestrictionMode": "allowList",
+  "sharingAllowedDomainList": ["partner.example.gov.au"],
+  "isResharingByExternalUsersEnabled": false,
+  "isUnmanagedSyncAppForTenantRestricted": true,
+  "idleSessionSignOut": {
+    "isEnabled": true,
+    "warnAfterInSeconds": 2700,
+    "signOutAfterInSeconds": 3600
+  }
+}

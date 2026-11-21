@@ -1,0 +1,171 @@
+schema_version: "1.0"
+blueprint_version: "v1.4.0"
+domain: "teams"
+settings:
+  - id: "TEAMS-EXT-001"
+    section: "Microsoft Teams / Users / External access"
+    title: "External federation restricted to explicitly allow-listed domains"
+    description: >-
+      Microsoft Teams external access must restrict federated communication to
+      approved partner domains and disable consumer Teams and Skype access.
+    severity: "high"
+    expected:
+      operator: "manual"
+      value: "AllowedDomains allow-list configured; consumer Teams/Skype disabled"
+    api_source:
+      kind: "manual"
+      manual_reason: >-
+        Microsoft Teams tenant federation configuration has no public read-only
+        Microsoft Graph API; requires MicrosoftTeams PowerShell module.
+      manual_guidance: >-
+        Run Connect-MicrosoftTeams and Get-CsTenantFederationConfiguration to
+        verify AllowedDomains, AllowTeamsConsumer and AllowPublicUsers.
+    ism_controls:
+      - "ISM-0407"
+      - "ISM-1084"
+    references:
+      - "https://blueprint.asd.gov.au/configuration/teams/users/external-access/"
+      - "https://learn.microsoft.com/en-us/microsoftteams/trusted-organizations-external-meetings-chat"
+
+  - id: "TEAMS-GUEST-001"
+    section: "Microsoft Teams / Global settings / External collaboration"
+    title: "Guest meeting, calling and messaging permissions restricted"
+    description: >-
+      Microsoft Teams guest settings must restrict unapproved screen sharing,
+      calling and meeting capabilities per the Blueprint baseline.
+    severity: "medium"
+    expected:
+      operator: "manual"
+      value: "Guest meeting, calling and messaging policies aligned with Blueprint"
+    api_source:
+      kind: "manual"
+      manual_reason: >-
+        Teams guest configuration policies are only exposed via MicrosoftTeams
+        PowerShell.
+      manual_guidance: >-
+        Run Get-CsTeamsGuestMeetingConfiguration,
+        Get-CsTeamsGuestCallingConfiguration and
+        Get-CsTeamsGuestMessagingConfiguration.
+    ism_controls:
+      - "ISM-0407"
+    references:
+      - "https://blueprint.asd.gov.au/configuration/teams/setting-and-policies/global-settings/external-collaboration/guest-access/"
+      - "https://learn.microsoft.com/en-us/microsoftteams/guest-access"
+
+  - id: "TEAMS-MEET-001"
+    section: "Microsoft Teams / Global settings / Meetings and events"
+    title: "Anonymous meeting join disabled and lobby bypass restricted"
+    description: >-
+      Global Teams meeting policy must disable anonymous join and restrict
+      automatic lobby admission to internal organisational users.
+    severity: "high"
+    expected:
+      operator: "manual"
+      value: "AllowAnonymousUsersToJoinMeeting: false; AutoAdmittedUsers restricted"
+    api_source:
+      kind: "manual"
+      manual_reason: >-
+        Teams meeting policies are not exposed through public Microsoft Graph
+        REST endpoints; requires MicrosoftTeams PowerShell.
+      manual_guidance: >-
+        Run Get-CsTeamsMeetingPolicy -Identity Global and verify
+        AllowAnonymousUsersToJoinMeeting and AutoAdmittedUsers.
+    ism_controls:
+      - "ISM-0407"
+    references:
+      - "https://blueprint.asd.gov.au/configuration/teams/setting-and-policies/global-settings/meetings-and-events/meetings/"
+      - "https://learn.microsoft.com/en-us/microsoftteams/meeting-settings-in-teams"
+
+  - id: "TEAMS-MSG-001"
+    section: "Microsoft Teams / Global settings / Messaging"
+    title: "Messaging policy preserves auditability of chats and messages"
+    description: >-
+      Teams messaging policy should restrict message and chat deletion in
+      alignment with organisational record-keeping and Blueprint guidance.
+    severity: "low"
+    expected:
+      operator: "manual"
+      value: "AllowUserDeleteMessage: false; AllowUserDeleteChat: false"
+    api_source:
+      kind: "manual"
+      manual_reason: >-
+        Teams messaging policies require MicrosoftTeams PowerShell.
+      manual_guidance: >-
+        Run Get-CsTeamsMessagingPolicy -Identity Global and review
+        AllowUserDeleteMessage and AllowUserDeleteChat.
+    ism_controls:
+      - "ISM-0580"
+    references:
+      - "https://blueprint.asd.gov.au/configuration/teams/setting-and-policies/global-settings/messaging/messaging/"
+      - "https://learn.microsoft.com/en-us/microsoftteams/messaging-policies-in-teams"
+
+  - id: "TEAMS-APP-001"
+    section: "Microsoft Teams / Teams apps / Manage apps"
+    title: "Third-party and custom Teams apps blocked by default"
+    description: >-
+      Teams app permission and setup policies must block unapproved third-party
+      applications and custom app sideloading.
+    severity: "high"
+    expected:
+      operator: "manual"
+      value: "Third-party and custom Teams apps blocked unless approved"
+    api_source:
+      kind: "manual"
+      manual_reason: >-
+        Teams app permission and setup policies require MicrosoftTeams
+        PowerShell or Teams admin center review.
+      manual_guidance: >-
+        Run Get-CsTeamsAppPermissionPolicy and Get-CsTeamsAppSetupPolicy to
+        verify third-party and custom app restrictions.
+    ism_controls:
+      - "ISM-1657"
+    references:
+      - "https://blueprint.asd.gov.au/configuration/teams/teams-apps/manage-apps/"
+      - "https://learn.microsoft.com/en-us/microsoftteams/teams-app-permission-policies"
+
+  - id: "TEAMS-ENC-001"
+    section: "Microsoft Teams / Global settings / Enhanced encryption"
+    title: "Enhanced end-to-end encryption policy configured"
+    description: >-
+      Microsoft Teams enhanced encryption policy must be configured according to
+      the Blueprint baseline for sensitive 1:1 calls.
+    severity: "medium"
+    expected:
+      operator: "manual"
+      value: "Teams enhanced encryption policy verified"
+    api_source:
+      kind: "manual"
+      manual_reason: >-
+        Teams enhanced encryption policies require MicrosoftTeams PowerShell.
+      manual_guidance: >-
+        Run Get-CsTeamsEnhancedEncryptionPolicy and verify
+        CallingEndtoEndEncryptionEnabledType.
+    ism_controls:
+      - "ISM-1139"
+    references:
+      - "https://blueprint.asd.gov.au/configuration/teams/setting-and-policies/global-settings/enhanced-encryption/enhanced-encryption/"
+      - "https://learn.microsoft.com/en-us/microsoftteams/teams-end-to-end-encryption"
+
+  - id: "TEAMS-CLIENT-001"
+    section: "Microsoft Teams / Global settings / Teams and channels"
+    title: "Third-party cloud storage providers disabled in Teams"
+    description: >-
+      Third-party cloud storage integrations (Dropbox, Box, Google Drive,
+      ShareFile, Egnyte) must be disabled in Microsoft Teams client settings.
+    severity: "medium"
+    expected:
+      operator: "manual"
+      value: "AllowDropBox, AllowBox, AllowGoogleDrive, AllowShareFile, AllowEgnyte all false"
+    api_source:
+      kind: "manual"
+      manual_reason: >-
+        Teams client configuration is only exposed through MicrosoftTeams
+        PowerShell.
+      manual_guidance: >-
+        Run Get-CsTeamsClientConfiguration and verify all third-party cloud
+        storage flags are False.
+    ism_controls:
+      - "ISM-1084"
+    references:
+      - "https://blueprint.asd.gov.au/configuration/teams/setting-and-policies/global-settings/teams-and-channels/teams/"
+      - "https://learn.microsoft.com/en-us/powershell/module/teams/get-csteamsclientconfiguration"

@@ -1,0 +1,158 @@
+schema_version: "1.0"
+blueprint_version: "v1.4.0"
+domain: "sharepoint-online"
+settings:
+  - id: "SPO-SHARE-001"
+    section: "SharePoint Online / Policies / Sharing"
+    title: "External sharing capability restricted (no anonymous links)"
+    description: >-
+      SharePoint Online tenant external sharing must be set to disabled or
+      existingExternalUserSharingOnly so anonymous Anyone links cannot be created.
+    severity: "high"
+    expected:
+      operator: "in"
+      path: "sharingCapability"
+      value:
+        - "disabled"
+        - "existingExternalUserSharingOnly"
+    api_source:
+      kind: "graph"
+      version: "v1.0"
+      method: "GET"
+      endpoint: "/admin/sharepoint/settings"
+      permissions:
+        - "SharePointTenantSettings.Read.All"
+      junction_operation: "graph.admin.sharepoint.settings.get"
+    ism_controls:
+      - "ISM-0407"
+      - "ISM-1084"
+    references:
+      - "https://blueprint.asd.gov.au/configuration/sharepoint-online/policies/sharing/"
+      - "https://learn.microsoft.com/en-us/graph/api/sharepointsettings-get?view=graph-rest-1.0"
+
+  - id: "SPO-SHARE-002"
+    section: "SharePoint Online / Policies / Sharing"
+    title: "External sharing domain restriction uses an explicit allow-list"
+    description: >-
+      SharePoint external sharing domain restrictions must use allowList mode
+      with at least one explicitly approved partner domain (or sharing disabled).
+    severity: "high"
+    expected:
+      operator: "policy_exists"
+      rule: "spo_domain_allowlist_configured"
+      value: "allowList"
+    api_source:
+      kind: "graph"
+      version: "v1.0"
+      method: "GET"
+      endpoint: "/admin/sharepoint/settings"
+      permissions:
+        - "SharePointTenantSettings.Read.All"
+      junction_operation: "graph.admin.sharepoint.settings.get"
+    ism_controls:
+      - "ISM-1084"
+    references:
+      - "https://blueprint.asd.gov.au/configuration/sharepoint-online/policies/sharing/"
+      - "https://learn.microsoft.com/en-us/graph/api/sharepointsettings-get?view=graph-rest-1.0"
+
+  - id: "SPO-SHARE-003"
+    section: "SharePoint Online / Policies / Sharing"
+    title: "Prevent external users from resharing items they do not own"
+    description: >-
+      SharePoint Online must disable resharing by external users
+      (isResharingByExternalUsersEnabled: false).
+    severity: "medium"
+    expected:
+      operator: "equals"
+      path: "isResharingByExternalUsersEnabled"
+      value: false
+    api_source:
+      kind: "graph"
+      version: "v1.0"
+      method: "GET"
+      endpoint: "/admin/sharepoint/settings"
+      permissions:
+        - "SharePointTenantSettings.Read.All"
+      junction_operation: "graph.admin.sharepoint.settings.get"
+    ism_controls:
+      - "ISM-0407"
+    references:
+      - "https://blueprint.asd.gov.au/configuration/sharepoint-online/policies/sharing/"
+      - "https://learn.microsoft.com/en-us/graph/api/sharepointsettings-get?view=graph-rest-1.0"
+
+  - id: "SPO-SYNC-001"
+    section: "SharePoint Online / Settings"
+    title: "Restrict OneDrive sync to managed or domain-joined devices"
+    description: >-
+      SharePoint tenant settings must restrict unmanaged OneDrive sync clients
+      (isUnmanagedSyncAppForTenantRestricted: true).
+    severity: "high"
+    expected:
+      operator: "equals"
+      path: "isUnmanagedSyncAppForTenantRestricted"
+      value: true
+    api_source:
+      kind: "graph"
+      version: "v1.0"
+      method: "GET"
+      endpoint: "/admin/sharepoint/settings"
+      permissions:
+        - "SharePointTenantSettings.Read.All"
+      junction_operation: "graph.admin.sharepoint.settings.get"
+    ism_controls:
+      - "ISM-1084"
+      - "ISM-1546"
+    references:
+      - "https://blueprint.asd.gov.au/configuration/sharepoint-online/settings/"
+      - "https://learn.microsoft.com/en-us/graph/api/sharepointsettings-get?view=graph-rest-1.0"
+
+  - id: "SPO-ACCESS-001"
+    section: "SharePoint Online / Policies / Access control"
+    title: "Idle session sign-out enabled for SharePoint browser sessions"
+    description: >-
+      SharePoint Online idle session sign-out must be enabled to reduce session
+      hijacking risk on shared or unattended browsers.
+    severity: "medium"
+    expected:
+      operator: "equals"
+      path: "idleSessionSignOut.isEnabled"
+      value: true
+    api_source:
+      kind: "graph"
+      version: "v1.0"
+      method: "GET"
+      endpoint: "/admin/sharepoint/settings"
+      permissions:
+        - "SharePointTenantSettings.Read.All"
+      junction_operation: "graph.admin.sharepoint.settings.get"
+    ism_controls:
+      - "ISM-0428"
+    references:
+      - "https://blueprint.asd.gov.au/configuration/sharepoint-online/policies/access-control/"
+      - "https://learn.microsoft.com/en-us/graph/api/sharepointsettings-get?view=graph-rest-1.0"
+
+  - id: "SPO-ACCESS-002"
+    section: "SharePoint Online / Policies / Access control"
+    title: "Legacy authentication protocols disabled for SharePoint Online"
+    description: >-
+      SharePoint legacy authentication protocols must be disabled in addition to
+      Entra Conditional Access legacy auth blocking.
+    severity: "high"
+    expected:
+      operator: "manual"
+      value: "LegacyAuthProtocolsEnabled: false"
+    api_source:
+      kind: "manual"
+      manual_reason: >-
+        LegacyAuthProtocolsEnabled is exposed via SharePoint Online Management
+        Shell (Get-SPOTenant) rather than the Graph sharepointSettings resource.
+      manual_guidance: >-
+        Run Connect-SPOService and Get-SPOTenant | Select-Object
+        LegacyAuthProtocolsEnabled and confirm False.
+    ism_controls:
+      - "ISM-1680"
+    essential_eight:
+      - "Multi-factor authentication"
+    references:
+      - "https://blueprint.asd.gov.au/configuration/sharepoint-online/policies/access-control/"
+      - "https://learn.microsoft.com/en-us/sharepoint/control-access-from-apps-that-dont-use-modern-authentication"

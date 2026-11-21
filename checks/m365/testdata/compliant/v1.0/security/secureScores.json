@@ -1,0 +1,10 @@
+{
+  "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#security/secureScores",
+  "value": [
+    {
+      "id": "00000000-0000-0000-0000-000000000901",
+      "currentScore": 420.5,
+      "maxScore": 500.0
+    }
+  ]
+}

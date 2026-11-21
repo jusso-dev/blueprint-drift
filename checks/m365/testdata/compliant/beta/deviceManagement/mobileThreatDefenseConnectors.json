@@ -1,0 +1,13 @@
+{
+  "@odata.context": "https://graph.microsoft.com/beta/$metadata#deviceManagement/mobileThreatDefenseConnectors",
+  "value": [
+    {
+      "id": "windowsDefenderATP",
+      "partnerState": "enabled",
+      "windowsEnabled": true,
+      "windowsDeviceBlockedOnMissingPartnerData": true,
+      "androidEnabled": true,
+      "iosEnabled": true
+    }
+  ]
+}

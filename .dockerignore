@@ -1,0 +1,8 @@
+.git
+.github
+dist/
+bin/
+snapshots/
+evidence-pack/
+*.log
+.DS_Store

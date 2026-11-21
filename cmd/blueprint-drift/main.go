@@ -13,6 +13,7 @@ import (
 	"github.com/jusso-dev/blueprint-drift/checks/intune"
 	"github.com/jusso-dev/blueprint-drift/checks/m365"
 	"github.com/jusso-dev/blueprint-drift/evidence"
+	"github.com/jusso-dev/blueprint-drift/src/audit"
 	"github.com/jusso-dev/blueprint-drift/src/blueprint"
 	"github.com/jusso-dev/blueprint-drift/src/engine"
 	"github.com/jusso-dev/blueprint-drift/src/graph"
@@ -237,6 +238,8 @@ func runDiff(args []string, stdout, stderr io.Writer) int {
 	toRef := fs.String("to", "", "Target snapshot file path or run ID")
 	format := fs.String("format", "text", "Output format: text, markdown or json")
 	outFile := fs.String("out", "", "Optional output file path (defaults to stdout)")
+	auditFixtures := fs.String("audit-fixtures", "", "Optional Graph fixtures directory containing v1.0/auditLogs/directoryAudits.json")
+	unifiedAudit := fs.String("unified-audit", "", "Optional Microsoft Purview unified audit JSON export for drift correlation")
 	failOnDrift := fs.Bool("fail-on-drift", false, "Exit with code 3 when drift is detected")
 
 	if err := fs.Parse(args); err != nil {
@@ -260,6 +263,25 @@ func runDiff(args []string, stdout, stderr io.Writer) int {
 	}
 
 	report := snapshot.Diff(fromSnap, toSnap)
+
+	if *auditFixtures != "" || *unifiedAudit != "" {
+		correlator := &audit.Correlator{}
+		if *auditFixtures != "" {
+			if fx, fxErr := graph.LoadFixtureDir(*auditFixtures); fxErr == nil {
+				correlator.Client = fx
+			} else {
+				fmt.Fprintf(stderr, "warning: audit fixtures unavailable (%v)\n", fxErr)
+			}
+		}
+		if *unifiedAudit != "" {
+			if evs, evErr := audit.LoadUnifiedAuditFile(*unifiedAudit); evErr == nil {
+				correlator.UnifiedEvents = evs
+			} else {
+				fmt.Fprintf(stderr, "warning: unified audit file unavailable (%v)\n", evErr)
+			}
+		}
+		correlator.Correlate(context.Background(), report)
+	}
 
 	var output []byte
 	switch *format {

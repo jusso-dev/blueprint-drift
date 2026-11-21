@@ -1,0 +1,423 @@
+schema_version: "1.0"
+blueprint_version: "v1.4.0"
+domain: "intune"
+settings:
+  - id: "INTUNE-COMP-001"
+    section: "Intune / Devices / Compliance policy settings"
+    title: "Mark devices with no compliance policy assigned as not compliant"
+    description: >-
+      Intune tenant compliance policy settings must default devices without an
+      assigned compliance policy to Not compliant (secureByDefault: true).
+    severity: "high"
+    expected:
+      operator: "equals"
+      path: "secureByDefault"
+      value: true
+    api_source:
+      kind: "graph"
+      version: "beta"
+      method: "GET"
+      endpoint: "/deviceManagement/settings"
+      permissions:
+        - "DeviceManagementConfiguration.Read.All"
+    ism_controls:
+      - "ISM-1546"
+      - "ISM-1507"
+    references:
+      - "https://blueprint.asd.gov.au/configuration/intune/devices/compliance-policies/compliance-policy-settings/"
+      - "https://learn.microsoft.com/en-us/graph/api/intune-shared-devicemanagementsettings-get?view=graph-rest-beta"
+
+  - id: "INTUNE-COMP-002"
+    section: "Intune / Devices / Compliance policy settings"
+    title: "Compliance status validity period is 30 days or fewer"
+    description: >-
+      Devices that have not checked in within 30 days must be marked as non-compliant.
+    severity: "medium"
+    expected:
+      operator: "lte"
+      path: "deviceComplianceCheckinThresholdDays"
+      value: 30
+    api_source:
+      kind: "graph"
+      version: "beta"
+      method: "GET"
+      endpoint: "/deviceManagement/settings"
+      permissions:
+        - "DeviceManagementConfiguration.Read.All"
+    ism_controls:
+      - "ISM-1546"
+    references:
+      - "https://blueprint.asd.gov.au/configuration/intune/devices/compliance-policies/compliance-policy-settings/"
+      - "https://learn.microsoft.com/en-us/graph/api/intune-shared-devicemanagementsettings-get?view=graph-rest-beta"
+
+  - id: "INTUNE-COMP-003"
+    section: "Intune / Devices / Compliance policies / Windows"
+    title: "Windows compliance policy requires BitLocker, Secure Boot and Code Integrity"
+    description: >-
+      At least one Windows 10/11 compliance policy must enforce BitLocker disk
+      encryption, Secure Boot and Code Integrity.
+    severity: "critical"
+    expected:
+      operator: "policy_exists"
+      rule: "intune_win_compliance_hardware"
+      value: true
+    api_source:
+      kind: "graph"
+      version: "v1.0"
+      method: "GET"
+      endpoint: "/deviceManagement/deviceCompliancePolicies"
+      permissions:
+        - "DeviceManagementConfiguration.Read.All"
+      junction_operation: "graph.device_management.device_compliance_policies.list"
+    ism_controls:
+      - "ISM-0459"
+      - "ISM-1477"
+    essential_eight:
+      - "Patch operating systems"
+    references:
+      - "https://blueprint.asd.gov.au/configuration/intune/devices/compliance-policies/policies/windows-10-11-compliance-policy/"
+      - "https://learn.microsoft.com/en-us/graph/api/intune-deviceconfig-devicecompliancepolicy-list?view=graph-rest-1.0"
+
+  - id: "INTUNE-COMP-004"
+    section: "Intune / Devices / Compliance policies / Windows"
+    title: "Windows compliance policy requires Defender antimalware, RTP and firewall"
+    description: >-
+      At least one Windows 10/11 compliance policy must require Microsoft
+      Defender Antivirus, real-time protection and host firewall enabled.
+    severity: "critical"
+    expected:
+      operator: "policy_exists"
+      rule: "intune_win_compliance_defender"
+      value: true
+    api_source:
+      kind: "graph"
+      version: "v1.0"
+      method: "GET"
+      endpoint: "/deviceManagement/deviceCompliancePolicies"
+      permissions:
+        - "DeviceManagementConfiguration.Read.All"
+      junction_operation: "graph.device_management.device_compliance_policies.list"
+    ism_controls:
+      - "ISM-1416"
+      - "ISM-1546"
+    references:
+      - "https://blueprint.asd.gov.au/configuration/intune/devices/compliance-policies/policies/windows-10-11-compliance-policy/"
+      - "https://learn.microsoft.com/en-us/graph/api/intune-deviceconfig-devicecompliancepolicy-list?view=graph-rest-1.0"
+
+  - id: "INTUNE-COMP-005"
+    section: "Intune / Devices / Compliance policies / Windows"
+    title: "Windows compliance policy enforces Defender for Endpoint risk score"
+    description: >-
+      Windows compliance policy must integrate with Microsoft Defender for
+      Endpoint threat protection and require a machine risk score of low or
+      secured.
+    severity: "high"
+    expected:
+      operator: "policy_exists"
+      rule: "intune_win_compliance_threat_level"
+      value: true
+    api_source:
+      kind: "graph"
+      version: "v1.0"
+      method: "GET"
+      endpoint: "/deviceManagement/deviceCompliancePolicies"
+      permissions:
+        - "DeviceManagementConfiguration.Read.All"
+      junction_operation: "graph.device_management.device_compliance_policies.list"
+    ism_controls:
+      - "ISM-1546"
+    references:
+      - "https://blueprint.asd.gov.au/configuration/intune/devices/compliance-policies/policies/windows-10-11-compliance-policy/"
+      - "https://learn.microsoft.com/en-us/graph/api/intune-deviceconfig-devicecompliancepolicy-list?view=graph-rest-1.0"
+
+  - id: "INTUNE-COMP-006"
+    section: "Intune / Devices / Compliance policies / iOS and iPadOS"
+    title: "iOS/iPadOS compliance policy blocks jailbroken devices and requires passcode"
+    description: >-
+      An iOS/iPadOS compliance policy must block jailbroken devices and require
+      a passcode of at least 6 characters.
+    severity: "high"
+    expected:
+      operator: "policy_exists"
+      rule: "intune_ios_compliance_baseline"
+      value: true
+    api_source:
+      kind: "graph"
+      version: "v1.0"
+      method: "GET"
+      endpoint: "/deviceManagement/deviceCompliancePolicies"
+      permissions:
+        - "DeviceManagementConfiguration.Read.All"
+      junction_operation: "graph.device_management.device_compliance_policies.list"
+    ism_controls:
+      - "ISM-0869"
+      - "ISM-1546"
+    references:
+      - "https://blueprint.asd.gov.au/configuration/intune/devices/compliance-policies/policies/apple-ios-and-ipad/"
+      - "https://learn.microsoft.com/en-us/graph/api/resources/intune-deviceconfig-ioscompliancepolicy?view=graph-rest-1.0"
+
+  - id: "INTUNE-CFG-001"
+    section: "Intune / Devices / Configuration policies / Windows"
+    title: "ASD Windows hardening Settings Catalog profile deployed"
+    description: >-
+      An assigned Windows 10/11 Settings Catalog configuration policy aligned
+      with the ASD Windows hardening guidelines must be present.
+    severity: "high"
+    expected:
+      operator: "policy_exists"
+      rule: "intune_cfg_windows_hardening"
+      value: true
+    api_source:
+      kind: "graph"
+      version: "beta"
+      method: "GET"
+      endpoint: "/deviceManagement/configurationPolicies"
+      permissions:
+        - "DeviceManagementConfiguration.Read.All"
+    ism_controls:
+      - "ISM-1409"
+      - "ISM-1488"
+    essential_eight:
+      - "User application hardening"
+    references:
+      - "https://blueprint.asd.gov.au/configuration/intune/devices/configuration-policies/asd-windows-hardening-guidelines/"
+      - "https://learn.microsoft.com/en-us/graph/api/intune-deviceconfigv2-devicemanagementconfigurationpolicy-list?view=graph-rest-beta"
+
+  - id: "INTUNE-CFG-002"
+    section: "Intune / Devices / Configuration policies / Office"
+    title: "Office macro hardening configuration profile deployed"
+    description: >-
+      An assigned Microsoft 365 Apps (Office) hardening configuration policy
+      restricting macros (all disabled or trusted publishers only) must be
+      present.
+    severity: "critical"
+    expected:
+      operator: "policy_exists"
+      rule: "intune_cfg_office_macros"
+      value: true
+    api_source:
+      kind: "graph"
+      version: "beta"
+      method: "GET"
+      endpoint: "/deviceManagement/configurationPolicies"
+      permissions:
+        - "DeviceManagementConfiguration.Read.All"
+    ism_controls:
+      - "ISM-1488"
+      - "ISM-1671"
+    essential_eight:
+      - "Configure Microsoft Office macro settings"
+    references:
+      - "https://blueprint.asd.gov.au/configuration/intune/devices/configuration-policies/asd-office-hardening-all-macros-disabled/"
+      - "https://learn.microsoft.com/en-us/graph/api/intune-deviceconfigv2-devicemanagementconfigurationpolicy-list?view=graph-rest-beta"
+
+  - id: "INTUNE-CFG-003"
+    section: "Intune / Devices / Configuration policies / Edge"
+    title: "Microsoft Edge hardening configuration profile deployed"
+    description: >-
+      An assigned Microsoft Edge hardening configuration policy must be present
+      to restrict risky browser features and unapproved extensions.
+    severity: "high"
+    expected:
+      operator: "policy_exists"
+      rule: "intune_cfg_edge_hardening"
+      value: true
+    api_source:
+      kind: "graph"
+      version: "beta"
+      method: "GET"
+      endpoint: "/deviceManagement/configurationPolicies"
+      permissions:
+        - "DeviceManagementConfiguration.Read.All"
+    ism_controls:
+      - "ISM-1485"
+      - "ISM-1486"
+    essential_eight:
+      - "User application hardening"
+    references:
+      - "https://blueprint.asd.gov.au/configuration/intune/devices/configuration-policies/asd-edge-hardening/"
+      - "https://learn.microsoft.com/en-us/graph/api/intune-deviceconfigv2-devicemanagementconfigurationpolicy-list?view=graph-rest-beta"
+
+  - id: "INTUNE-CFG-004"
+    section: "Intune / Devices / Configuration policies / iOS and iPadOS"
+    title: "iOS/iPadOS device hardening configuration profile deployed"
+    description: >-
+      At least one iOS/iPadOS device configuration profile restricting
+      unmanaged data flows and configuring Enterprise SSO must be deployed.
+    severity: "medium"
+    expected:
+      operator: "policy_exists"
+      rule: "intune_cfg_ios_profile"
+      value: true
+    api_source:
+      kind: "graph"
+      version: "v1.0"
+      method: "GET"
+      endpoint: "/deviceManagement/deviceConfigurations"
+      permissions:
+        - "DeviceManagementConfiguration.Read.All"
+      junction_operation: "graph.device_management.device_configurations.list"
+    ism_controls:
+      - "ISM-0869"
+    references:
+      - "https://blueprint.asd.gov.au/configuration/intune/devices/configuration-policies/ios-ipad/"
+      - "https://learn.microsoft.com/en-us/graph/api/intune-deviceconfig-deviceconfiguration-list?view=graph-rest-1.0"
+
+  - id: "INTUNE-SEC-001"
+    section: "Intune / Endpoint security / Attack surface reduction"
+    title: "Attack Surface Reduction (ASR) rules policy deployed"
+    description: >-
+      An assigned Endpoint Security Attack Surface Reduction policy must be
+      present for Windows endpoints.
+    severity: "critical"
+    expected:
+      operator: "policy_exists"
+      rule: "intune_sec_asr_policy"
+      value: true
+    api_source:
+      kind: "graph"
+      version: "beta"
+      method: "GET"
+      endpoint: "/deviceManagement/configurationPolicies"
+      permissions:
+        - "DeviceManagementConfiguration.Read.All"
+    ism_controls:
+      - "ISM-1485"
+      - "ISM-1488"
+    essential_eight:
+      - "User application hardening"
+    references:
+      - "https://blueprint.asd.gov.au/configuration/intune/endpoint-security/attack-surface-reduction/asd-windows-hardening-asr/"
+      - "https://learn.microsoft.com/en-us/mem/intune/protect/endpoint-security-policy"
+
+  - id: "INTUNE-SEC-002"
+    section: "Intune / Endpoint security / Security baselines"
+    title: "Intune security baselines deployed"
+    description: >-
+      Active Intune security baseline intents (Windows, Microsoft Edge and
+      Microsoft Defender for Endpoint) must be deployed and assigned.
+    severity: "high"
+    expected:
+      operator: "policy_exists"
+      rule: "intune_sec_baselines_present"
+      value: true
+    api_source:
+      kind: "graph"
+      version: "beta"
+      method: "GET"
+      endpoint: "/deviceManagement/intents"
+      permissions:
+        - "DeviceManagementConfiguration.Read.All"
+    ism_controls:
+      - "ISM-1409"
+    references:
+      - "https://blueprint.asd.gov.au/configuration/intune/endpoint-security/security-baselines/security-baseline-for-windows-10-and-later/"
+      - "https://learn.microsoft.com/en-us/graph/api/intune-deviceintent-devicemanagementintent-list?view=graph-rest-beta"
+
+  - id: "INTUNE-APP-001"
+    section: "Intune / Apps / App protection policies / iOS"
+    title: "iOS managed app protection policy enforces PIN and blocks unmanaged outbound data transfer"
+    description: >-
+      An iOS managed app protection policy must require a PIN and restrict
+      outbound data transfers to managed applications.
+    severity: "high"
+    expected:
+      operator: "policy_exists"
+      rule: "intune_app_ios_protection"
+      value: true
+    api_source:
+      kind: "graph"
+      version: "v1.0"
+      method: "GET"
+      endpoint: "/deviceAppManagement/iosManagedAppProtections"
+      permissions:
+        - "DeviceManagementApps.Read.All"
+      junction_operation: "graph.device_app_management.ios_managed_app_protections.list"
+    ism_controls:
+      - "ISM-0869"
+      - "ISM-1084"
+    references:
+      - "https://blueprint.asd.gov.au/configuration/intune/apps/by-platform/ios-ipados/"
+      - "https://learn.microsoft.com/en-us/graph/api/intune-mam-iosmanagedappprotection-list?view=graph-rest-1.0"
+
+  - id: "INTUNE-APP-002"
+    section: "Intune / Apps / App protection policies / Android"
+    title: "Android managed app protection policy enforces PIN and blocks unmanaged outbound data transfer"
+    description: >-
+      An Android managed app protection policy must require a PIN and restrict
+      outbound data transfers to managed applications.
+    severity: "high"
+    expected:
+      operator: "policy_exists"
+      rule: "intune_app_android_protection"
+      value: true
+    api_source:
+      kind: "graph"
+      version: "v1.0"
+      method: "GET"
+      endpoint: "/deviceAppManagement/androidManagedAppProtections"
+      permissions:
+        - "DeviceManagementApps.Read.All"
+      junction_operation: "graph.device_app_management.android_managed_app_protections.list"
+    ism_controls:
+      - "ISM-0869"
+      - "ISM-1084"
+    references:
+      - "https://blueprint.asd.gov.au/configuration/intune/"
+      - "https://learn.microsoft.com/en-us/graph/api/intune-mam-androidmanagedappprotection-list?view=graph-rest-1.0"
+
+  - id: "INTUNE-SCR-001"
+    section: "Intune / Devices / Scripts"
+    title: "ASD Windows registry hardening remediation scripts verified"
+    description: >-
+      Intune platform and remediation scripts covering SMB signing, NTLM
+      restrictions, OLE activation blocking and Kerberos hardening must be
+      reviewed for script integrity and endpoint execution status.
+    severity: "medium"
+    expected:
+      operator: "manual"
+      value: "All Blueprint Windows hardening scripts deployed with successful endpoint run status"
+    api_source:
+      kind: "manual"
+      manual_reason: >-
+        Verifying exact PowerShell script contents and endpoint execution
+        telemetry requires manual inspection beyond simple policy presence.
+      manual_guidance: >-
+        Review Intune -> Devices -> Scripts and remediations against the
+        Blueprint scripts list and confirm execution success rates across
+        managed Windows devices.
+    ism_controls:
+      - "ISM-1409"
+    references:
+      - "https://blueprint.asd.gov.au/configuration/intune/devices/scripts/"
+      - "https://learn.microsoft.com/en-us/mem/intune/apps/intune-management-extension"
+
+  - id: "INTUNE-WDAC-001"
+    section: "Intune / Endpoint security / Application control"
+    title: "Application control (WDAC / AppLocker) enforced per Essential Eight"
+    description: >-
+      Application control policies (Windows Defender Application Control or
+      AppLocker) must be enforced on managed workstations to block unapproved
+      executables, scripts and installers.
+    severity: "critical"
+    expected:
+      operator: "manual"
+      value: "Enforced WDAC/AppLocker allow-list policy verified with CodeIntegrity event telemetry"
+    api_source:
+      kind: "manual"
+      manual_reason: >-
+        Verifying custom WDAC XML allow-list rules and confirming enforcement
+        mode (non-audit) across managed endpoints requires manual policy XML and
+        event log review.
+      manual_guidance: >-
+        Export the active WDAC/AppLocker policy XML from Intune, confirm
+        Enabled:Audit Mode is removed for enforced groups, and verify
+        Microsoft-Windows-CodeIntegrity/Operational event logs.
+    ism_controls:
+      - "ISM-0843"
+      - "ISM-1490"
+    essential_eight:
+      - "Application control"
+    references:
+      - "https://blueprint.asd.gov.au/configuration/intune/"
+      - "https://learn.microsoft.com/en-us/windows/security/application-security/application-control/app-control-for-business/appcontrol"

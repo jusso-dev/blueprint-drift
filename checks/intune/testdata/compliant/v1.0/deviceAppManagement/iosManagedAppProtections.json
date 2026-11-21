@@ -1,0 +1,14 @@
+{
+  "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#deviceAppManagement/iosManagedAppProtections",
+  "value": [
+    {
+      "id": "00000000-0000-0000-0000-000000000801",
+      "displayName": "BP - iOS Managed App Protection Policy",
+      "pinRequired": true,
+      "minimumPinLength": 6,
+      "maximumPinRetries": 5,
+      "allowedOutboundDataTransferDestinations": "managedApps",
+      "dataBackupBlocked": true
+    }
+  ]
+}

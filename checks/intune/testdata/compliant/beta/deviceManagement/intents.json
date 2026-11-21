@@ -1,0 +1,15 @@
+{
+  "@odata.context": "https://graph.microsoft.com/beta/$metadata#deviceManagement/intents",
+  "value": [
+    {
+      "id": "00000000-0000-0000-0000-000000000701",
+      "displayName": "BP - Security Baseline for Windows 10 and later",
+      "isAssigned": true
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000702",
+      "displayName": "BP - Microsoft Defender for Endpoint Baseline",
+      "isAssigned": true
+    }
+  ]
+}

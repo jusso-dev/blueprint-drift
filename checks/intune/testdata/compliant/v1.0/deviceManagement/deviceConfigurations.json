@@ -1,0 +1,10 @@
+{
+  "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#deviceManagement/deviceConfigurations",
+  "value": [
+    {
+      "@odata.type": "#microsoft.graph.iosGeneralDeviceConfiguration",
+      "id": "00000000-0000-0000-0000-000000000601",
+      "displayName": "BP - iOS and iPadOS Hardening Profile"
+    }
+  ]
+}

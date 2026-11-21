@@ -1,0 +1,20 @@
+{
+  "run_id": "run-20261121T000000Z",
+  "tenant_id": "00000000-0000-0000-0000-000000000000",
+  "blueprint_version": "v1.4.0",
+  "generated_at": "2026-11-21T00:00:00Z",
+  "disclaimer": "Independent community project. Not produced, endorsed or supported by the Australian Signals Directorate (ASD), the Australian Cyber Security Centre (ACSC) or Microsoft.",
+  "summary": {
+    "total": 32,
+    "pass": 30,
+    "fail": 0,
+    "manual": 2,
+    "error": 0
+  },
+  "artefacts_sha256": {
+    "evidence-report.csv": "2a478a331a868e9418ef61b24baf34b25f1f41c495f27d89d16846913262c127",
+    "evidence-report.html": "9fad84cc0ec3b38eb39765808f5ef1d726fbf3fc8133dc82382c350b94376cdb",
+    "evidence-report.json": "0c1eb0335c0f91737817e417c87f34817467ec8c478db06e819b2c93169c7ba5",
+    "evidence-report.md": "3e0786405ed47130510385ff9f3d84a6c62de7d814413f09881ff5ae764cba8a"
+  }
+}

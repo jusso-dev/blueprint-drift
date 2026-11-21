@@ -1,0 +1,841 @@
+schema_version: "1.0"
+blueprint_version: "v1.4.0"
+domain: "entra-id"
+settings:
+  - id: "ENTRA-PROP-001"
+    section: "Entra ID / Identity properties"
+    title: "Security defaults disabled in favour of Conditional Access"
+    description: >-
+      Security defaults must be disabled so that granular Blueprint Conditional
+      Access policies can be enforced across the tenant.
+    severity: "high"
+    expected:
+      operator: "equals"
+      path: "isEnabled"
+      value: false
+    api_source:
+      kind: "graph"
+      version: "v1.0"
+      method: "GET"
+      endpoint: "/policies/identitySecurityDefaultsEnforcementPolicy"
+      permissions:
+        - "Policy.Read.All"
+      junction_operation: "graph.policies.identity_security_defaults_enforcement_policy.get"
+    ism_controls:
+      - "ISM-1507"
+      - "ISM-1679"
+    essential_eight:
+      - "Multi-factor authentication"
+    references:
+      - "https://blueprint.asd.gov.au/configuration/entra-id/identity-properties/"
+      - "https://learn.microsoft.com/en-us/graph/api/identitysecuritydefaultsenforcementpolicy-get?view=graph-rest-1.0"
+
+  - id: "ENTRA-PROP-002"
+    section: "Entra ID / Identity properties"
+    title: "Tenant country and data location set to Australia"
+    description: >-
+      The Microsoft Entra ID organisation country code must be set to AU
+      (Australia) to align with Australian data residency requirements.
+    severity: "high"
+    expected:
+      operator: "policy_exists"
+      rule: "entra_org_country_au"
+      value: "AU"
+    api_source:
+      kind: "graph"
+      version: "v1.0"
+      method: "GET"
+      endpoint: "/organization"
+      permissions:
+        - "Organization.Read.All"
+      junction_operation: "graph.organization.list"
+    ism_controls:
+      - "ISM-1577"
+    references:
+      - "https://blueprint.asd.gov.au/configuration/entra-id/identity-properties/"
+      - "https://learn.microsoft.com/en-us/graph/api/organization-list?view=graph-rest-1.0"
+
+  - id: "ENTRA-USER-001"
+    section: "Entra ID / User settings"
+    title: "Non-admin users cannot register applications"
+    description: >-
+      Default user role permissions must prevent non-admin users from
+      registering new applications in Entra ID.
+    severity: "high"
+    expected:
+      operator: "equals"
+      path: "defaultUserRolePermissions.allowedToCreateApps"
+      value: false
+    api_source:
+      kind: "graph"
+      version: "v1.0"
+      method: "GET"
+      endpoint: "/policies/authorizationPolicy"
+      permissions:
+        - "Policy.Read.All"
+      junction_operation: "graph.policies.authorization_policy.get"
+    ism_controls:
+      - "ISM-1507"
+    essential_eight:
+      - "Restrict administrative privileges"
+    references:
+      - "https://blueprint.asd.gov.au/configuration/entra-id/users/user-settings/"
+      - "https://learn.microsoft.com/en-us/graph/api/authorizationpolicy-get?view=graph-rest-1.0"
+
+  - id: "ENTRA-USER-002"
+    section: "Entra ID / User settings"
+    title: "Non-admin users cannot create tenants"
+    description: >-
+      Default user role permissions must prevent non-admin users from creating
+      unmanaged Entra tenants.
+    severity: "medium"
+    expected:
+      operator: "equals"
+      path: "defaultUserRolePermissions.allowedToCreateTenants"
+      value: false
+    api_source:
+      kind: "graph"
+      version: "v1.0"
+      method: "GET"
+      endpoint: "/policies/authorizationPolicy"
+      permissions:
+        - "Policy.Read.All"
+      junction_operation: "graph.policies.authorization_policy.get"
+    ism_controls:
+      - "ISM-1507"
+    references:
+      - "https://blueprint.asd.gov.au/configuration/entra-id/users/user-settings/"
+      - "https://learn.microsoft.com/en-us/graph/api/authorizationpolicy-get?view=graph-rest-1.0"
+
+  - id: "ENTRA-USER-003"
+    section: "Entra ID / User settings"
+    title: "Non-admin users cannot create security groups"
+    description: >-
+      Default user role permissions must prevent non-admin users from creating
+      Entra security groups.
+    severity: "medium"
+    expected:
+      operator: "equals"
+      path: "defaultUserRolePermissions.allowedToCreateSecurityGroups"
+      value: false
+    api_source:
+      kind: "graph"
+      version: "v1.0"
+      method: "GET"
+      endpoint: "/policies/authorizationPolicy"
+      permissions:
+        - "Policy.Read.All"
+      junction_operation: "graph.policies.authorization_policy.get"
+    ism_controls:
+      - "ISM-0407"
+    references:
+      - "https://blueprint.asd.gov.au/configuration/entra-id/users/user-settings/"
+      - "https://learn.microsoft.com/en-us/graph/api/authorizationpolicy-get?view=graph-rest-1.0"
+
+  - id: "ENTRA-USER-004"
+    section: "Entra ID / User settings"
+    title: "Guest user access set to most restrictive"
+    description: >-
+      Guest user directory access must be restricted to properties and
+      memberships of their own directory objects
+      (2af84b1e-32c8-42b7-82bc-daa82404023b).
+    severity: "high"
+    expected:
+      operator: "equals"
+      path: "guestUserRoleId"
+      value: "2af84b1e-32c8-42b7-82bc-daa82404023b"
+    api_source:
+      kind: "graph"
+      version: "v1.0"
+      method: "GET"
+      endpoint: "/policies/authorizationPolicy"
+      permissions:
+        - "Policy.Read.All"
+      junction_operation: "graph.policies.authorization_policy.get"
+    ism_controls:
+      - "ISM-0407"
+      - "ISM-1405"
+    references:
+      - "https://blueprint.asd.gov.au/configuration/entra-id/users/user-settings/"
+      - "https://learn.microsoft.com/en-us/graph/api/authorizationpolicy-get?view=graph-rest-1.0"
+
+  - id: "ENTRA-USER-005"
+    section: "Entra ID / External identities"
+    title: "Guest invitations restricted to administrators and Guest Inviters"
+    description: >-
+      Only administrators and users assigned the Guest Inviter role (or nobody)
+      may invite external guest users.
+    severity: "high"
+    expected:
+      operator: "in"
+      path: "allowInvitesFrom"
+      value:
+        - "none"
+        - "adminsAndGuestInviters"
+    api_source:
+      kind: "graph"
+      version: "v1.0"
+      method: "GET"
+      endpoint: "/policies/authorizationPolicy"
+      permissions:
+        - "Policy.Read.All"
+      junction_operation: "graph.policies.authorization_policy.get"
+    ism_controls:
+      - "ISM-0407"
+    references:
+      - "https://blueprint.asd.gov.au/configuration/entra-id/external-identities/external-collaboration-settings/"
+      - "https://learn.microsoft.com/en-us/graph/api/authorizationpolicy-get?view=graph-rest-1.0"
+
+  - id: "ENTRA-USER-006"
+    section: "Entra ID / User settings"
+    title: "Block legacy MSOL PowerShell for non-admins"
+    description: >-
+      Access to legacy MSOnline PowerShell endpoints must be blocked for
+      non-administrator users.
+    severity: "medium"
+    expected:
+      operator: "equals"
+      path: "blockMsolPowerShell"
+      value: true
+    api_source:
+      kind: "graph"
+      version: "v1.0"
+      method: "GET"
+      endpoint: "/policies/authorizationPolicy"
+      permissions:
+        - "Policy.Read.All"
+      junction_operation: "graph.policies.authorization_policy.get"
+    ism_controls:
+      - "ISM-0407"
+    references:
+      - "https://blueprint.asd.gov.au/configuration/entra-id/users/user-settings/"
+      - "https://learn.microsoft.com/en-us/graph/api/authorizationpolicy-get?view=graph-rest-1.0"
+
+  - id: "ENTRA-USER-007"
+    section: "Entra ID / User settings"
+    title: "Restrict non-admin access to Microsoft Entra admin portal"
+    description: >-
+      Non-administrator users must be restricted from accessing the Microsoft
+      Entra administration portal.
+    severity: "medium"
+    expected:
+      operator: "equals"
+      path: "defaultUserRolePermissions.allowedToReadOtherUsers"
+      value: false
+    api_source:
+      kind: "graph"
+      version: "beta"
+      method: "GET"
+      endpoint: "/policies/authorizationPolicy"
+      permissions:
+        - "Policy.Read.All"
+      junction_operation: "graph.policies.authorization_policy.get"
+    ism_controls:
+      - "ISM-0407"
+    references:
+      - "https://blueprint.asd.gov.au/configuration/entra-id/users/user-settings/"
+      - "https://learn.microsoft.com/en-us/graph/api/authorizationpolicy-get?view=graph-rest-beta"
+
+  - id: "ENTRA-APP-001"
+    section: "Entra ID / Enterprise applications / Consent and permissions"
+    title: "Do not allow user consent for applications"
+    description: >-
+      Users must not be allowed to consent to third-party applications
+      accessing organisational data on their behalf.
+    severity: "high"
+    expected:
+      operator: "policy_exists"
+      rule: "entra_user_consent_disabled"
+      value: true
+    api_source:
+      kind: "graph"
+      version: "v1.0"
+      method: "GET"
+      endpoint: "/policies/authorizationPolicy"
+      permissions:
+        - "Policy.Read.All"
+      junction_operation: "graph.policies.authorization_policy.get"
+    ism_controls:
+      - "ISM-1507"
+      - "ISM-1657"
+    references:
+      - "https://blueprint.asd.gov.au/configuration/entra-id/applications/enterprise-applications/consent-and-permissions/user-consent-settings/"
+      - "https://learn.microsoft.com/en-us/entra/identity/enterprise-apps/configure-user-consent"
+
+  - id: "ENTRA-APP-002"
+    section: "Entra ID / Enterprise applications / Consent and permissions"
+    title: "Admin consent workflow enabled"
+    description: >-
+      The Microsoft Entra admin consent request workflow must be enabled so
+      application access requests are reviewed by designated reviewers.
+    severity: "medium"
+    expected:
+      operator: "equals"
+      path: "isEnabled"
+      value: true
+    api_source:
+      kind: "graph"
+      version: "v1.0"
+      method: "GET"
+      endpoint: "/policies/adminConsentRequestPolicy"
+      permissions:
+        - "Policy.Read.All"
+      junction_operation: "graph.policies.admin_consent_request_policy.get"
+    ism_controls:
+      - "ISM-1507"
+    references:
+      - "https://blueprint.asd.gov.au/configuration/entra-id/applications/enterprise-applications/consent-and-permissions/admin-consent-settings/"
+      - "https://learn.microsoft.com/en-us/graph/api/adminconsentrequestpolicy-get?view=graph-rest-1.0"
+
+  - id: "ENTRA-DEV-001"
+    section: "Entra ID / Devices / Device settings"
+    title: "Microsoft Entra Local Administrator Password Solution (LAPS) enabled"
+    description: >-
+      Microsoft Entra LAPS must be enabled to rotate and store local
+      administrator credentials securely.
+    severity: "high"
+    expected:
+      operator: "equals"
+      path: "localAdminPassword.isEnabled"
+      value: true
+    api_source:
+      kind: "graph"
+      version: "beta"
+      method: "GET"
+      endpoint: "/policies/deviceRegistrationPolicy"
+      permissions:
+        - "Policy.Read.All"
+    ism_controls:
+      - "ISM-0445"
+      - "ISM-1647"
+    essential_eight:
+      - "Restrict administrative privileges"
+    references:
+      - "https://blueprint.asd.gov.au/configuration/entra-id/devices/device-settings/"
+      - "https://learn.microsoft.com/en-us/graph/api/deviceregistrationpolicy-get?view=graph-rest-beta"
+
+  - id: "ENTRA-DEV-002"
+    section: "Entra ID / Devices / Device settings"
+    title: "Microsoft Entra join permissions configured"
+    description: >-
+      Device registration policy must restrict Microsoft Entra join to an
+      approved group or all managed users with Conditional Access enrolment
+      enforcement and bounded device quota.
+    severity: "medium"
+    expected:
+      operator: "policy_exists"
+      rule: "entra_device_join_controlled"
+      value: true
+    api_source:
+      kind: "graph"
+      version: "beta"
+      method: "GET"
+      endpoint: "/policies/deviceRegistrationPolicy"
+      permissions:
+        - "Policy.Read.All"
+    ism_controls:
+      - "ISM-1507"
+    references:
+      - "https://blueprint.asd.gov.au/configuration/entra-id/devices/device-settings/"
+      - "https://learn.microsoft.com/en-us/graph/api/deviceregistrationpolicy-get?view=graph-rest-beta"
+
+  - id: "ENTRA-DEV-003"
+    section: "Entra ID / Devices / Device settings"
+    title: "Device registration MFA delegated to Conditional Access"
+    description: >-
+      Legacy device registration MFA toggle should not conflict with strong
+      authentication Conditional Access enrolment policies.
+    severity: "low"
+    expected:
+      operator: "in"
+      path: "multiFactorAuthConfiguration"
+      value:
+        - "notRequired"
+        - "required"
+    api_source:
+      kind: "graph"
+      version: "beta"
+      method: "GET"
+      endpoint: "/policies/deviceRegistrationPolicy"
+      permissions:
+        - "Policy.Read.All"
+    ism_controls:
+      - "ISM-1507"
+    references:
+      - "https://blueprint.asd.gov.au/configuration/entra-id/devices/device-settings/"
+      - "https://learn.microsoft.com/en-us/graph/api/deviceregistrationpolicy-get?view=graph-rest-beta"
+
+  - id: "ENTRA-EXT-001"
+    section: "Entra ID / External identities / Cross-tenant access"
+    title: "Cross-tenant default inbound B2B collaboration blocked"
+    description: >-
+      Default inbound B2B collaboration access in cross-tenant access settings
+      must block unapproved external tenants by default.
+    severity: "high"
+    expected:
+      operator: "policy_exists"
+      rule: "entra_cross_tenant_inbound_blocked"
+      value: true
+    api_source:
+      kind: "graph"
+      version: "v1.0"
+      method: "GET"
+      endpoint: "/policies/crossTenantAccessPolicy/default"
+      permissions:
+        - "Policy.Read.All"
+    ism_controls:
+      - "ISM-0407"
+      - "ISM-1507"
+    references:
+      - "https://blueprint.asd.gov.au/configuration/entra-id/external-identities/cross-tenant-access-settings/"
+      - "https://learn.microsoft.com/en-us/graph/api/crosstenantaccesspolicyconfigurationdefault-get?view=graph-rest-1.0"
+
+  - id: "ENTRA-GRP-001"
+    section: "Entra ID / Groups / General"
+    title: "Users cannot create Microsoft 365 groups"
+    description: >-
+      The Group.Unified directory setting must set EnableGroupCreation to false
+      so only authorised groups or administrators can create Microsoft 365
+      groups.
+    severity: "medium"
+    expected:
+      operator: "policy_exists"
+      rule: "entra_group_creation_disabled"
+      value: false
+    api_source:
+      kind: "graph"
+      version: "beta"
+      method: "GET"
+      endpoint: "/settings"
+      permissions:
+        - "Directory.Read.All"
+    ism_controls:
+      - "ISM-0407"
+    references:
+      - "https://blueprint.asd.gov.au/configuration/entra-id/groups/general/"
+      - "https://learn.microsoft.com/en-us/graph/api/directorysetting-list?view=graph-rest-beta"
+
+  - id: "ENTRA-AUTH-001"
+    section: "Entra ID / Protection / Authentication methods"
+    title: "Phishing-resistant FIDO2 security keys enabled"
+    description: >-
+      FIDO2 security keys must be enabled in the authentication methods policy
+      to support phishing-resistant multi-factor authentication.
+    severity: "critical"
+    expected:
+      operator: "policy_exists"
+      rule: "entra_auth_fido2_enabled"
+      value: "enabled"
+    api_source:
+      kind: "graph"
+      version: "v1.0"
+      method: "GET"
+      endpoint: "/policies/authenticationMethodsPolicy"
+      permissions:
+        - "Policy.Read.All"
+    ism_controls:
+      - "ISM-1679"
+      - "ISM-1681"
+    essential_eight:
+      - "Multi-factor authentication"
+    references:
+      - "https://blueprint.asd.gov.au/configuration/entra-id/protection/authentication-methods/policies/"
+      - "https://learn.microsoft.com/en-us/graph/api/authenticationmethodspolicy-get?view=graph-rest-1.0"
+
+  - id: "ENTRA-AUTH-002"
+    section: "Entra ID / Protection / Authentication methods"
+    title: "Weak legacy authentication methods (SMS, Voice, Email OTP) disabled"
+    description: >-
+      SMS, Voice and Email OTP authentication methods must be disabled in the
+      authentication methods policy because they are not phishing-resistant.
+    severity: "critical"
+    expected:
+      operator: "policy_exists"
+      rule: "entra_auth_weak_methods_disabled"
+      value: "disabled"
+    api_source:
+      kind: "graph"
+      version: "v1.0"
+      method: "GET"
+      endpoint: "/policies/authenticationMethodsPolicy"
+      permissions:
+        - "Policy.Read.All"
+    ism_controls:
+      - "ISM-1679"
+      - "ISM-1681"
+    essential_eight:
+      - "Multi-factor authentication"
+    references:
+      - "https://blueprint.asd.gov.au/configuration/entra-id/protection/authentication-methods/policies/"
+      - "https://learn.microsoft.com/en-us/graph/api/authenticationmethodspolicy-get?view=graph-rest-1.0"
+
+  - id: "ENTRA-AUTH-003"
+    section: "Entra ID / Protection / Authentication methods"
+    title: "Temporary Access Pass enabled with bounded lifetime"
+    description: >-
+      Temporary Access Pass (TAP) should be enabled with a bounded lifetime
+      (<= 480 minutes) for onboarding phishing-resistant credentials.
+    severity: "medium"
+    expected:
+      operator: "policy_exists"
+      rule: "entra_auth_tap_bounded"
+      value: true
+    api_source:
+      kind: "graph"
+      version: "v1.0"
+      method: "GET"
+      endpoint: "/policies/authenticationMethodsPolicy"
+      permissions:
+        - "Policy.Read.All"
+    ism_controls:
+      - "ISM-1679"
+    essential_eight:
+      - "Multi-factor authentication"
+    references:
+      - "https://blueprint.asd.gov.au/configuration/entra-id/protection/authentication-methods/policies/"
+      - "https://learn.microsoft.com/en-us/graph/api/authenticationmethodspolicy-get?view=graph-rest-1.0"
+
+  - id: "ENTRA-AUTH-004"
+    section: "Entra ID / Protection / Password protection"
+    title: "Entra Password Protection smart lockout and custom banned password list enabled"
+    description: >-
+      PasswordRuleSettings must enable the custom banned password list and
+      configure smart lockout threshold <= 10 and lockout duration >= 60
+      seconds.
+    severity: "high"
+    expected:
+      operator: "policy_exists"
+      rule: "entra_password_protection_enabled"
+      value: true
+    api_source:
+      kind: "graph"
+      version: "beta"
+      method: "GET"
+      endpoint: "/settings"
+      permissions:
+        - "Directory.Read.All"
+    ism_controls:
+      - "ISM-0421"
+      - "ISM-1403"
+    references:
+      - "https://blueprint.asd.gov.au/configuration/entra-id/protection/authentication-methods/password-protection/"
+      - "https://learn.microsoft.com/en-us/entra/identity/authentication/concept-password-ban-bad"
+
+  - id: "ENTRA-AUTH-005"
+    section: "Entra ID / Protection / Authentication methods"
+    title: "System-preferred multi-factor authentication enabled"
+    description: >-
+      System-preferred MFA must be enabled so users are prompted with their
+      strongest registered authentication method first.
+    severity: "medium"
+    expected:
+      operator: "equals"
+      path: "systemCredentialPreferences.state"
+      value: "enabled"
+    api_source:
+      kind: "graph"
+      version: "v1.0"
+      method: "GET"
+      endpoint: "/policies/authenticationMethodsPolicy"
+      permissions:
+        - "Policy.Read.All"
+    ism_controls:
+      - "ISM-1679"
+    essential_eight:
+      - "Multi-factor authentication"
+    references:
+      - "https://blueprint.asd.gov.au/configuration/entra-id/protection/authentication-methods/settings/"
+      - "https://learn.microsoft.com/en-us/graph/api/authenticationmethodspolicy-get?view=graph-rest-1.0"
+
+  - id: "ENTRA-CA-001"
+    section: "Entra ID / Conditional Access / Named locations"
+    title: "Approved countries named location includes Australia (AU)"
+    description: >-
+      At least one country named location must be configured including AU
+      (Australia) for geo-fencing Conditional Access policies.
+    severity: "high"
+    expected:
+      operator: "policy_exists"
+      rule: "entra_named_location_au"
+      value: "AU"
+    api_source:
+      kind: "graph"
+      version: "v1.0"
+      method: "GET"
+      endpoint: "/identity/conditionalAccess/namedLocations"
+      permissions:
+        - "Policy.Read.All"
+    ism_controls:
+      - "ISM-1507"
+    references:
+      - "https://blueprint.asd.gov.au/configuration/entra-id/protection/conditional-access/named-locations/"
+      - "https://learn.microsoft.com/en-us/graph/api/conditionalaccessroot-list-namedlocations?view=graph-rest-1.0"
+
+  - id: "ENTRA-CA-002"
+    section: "Entra ID / Conditional Access / Policies"
+    title: "Block legacy authentication"
+    description: >-
+      An enabled Conditional Access policy must target all users and all cloud
+      applications and block exchangeActiveSync and other legacy client types.
+    severity: "critical"
+    expected:
+      operator: "policy_exists"
+      rule: "ca_block_legacy_auth"
+      value: true
+    api_source:
+      kind: "graph"
+      version: "v1.0"
+      method: "GET"
+      endpoint: "/identity/conditionalAccess/policies"
+      permissions:
+        - "Policy.Read.All"
+      junction_operation: "graph.identity.conditional_access.policies.list"
+    ism_controls:
+      - "ISM-1507"
+      - "ISM-1680"
+    essential_eight:
+      - "Multi-factor authentication"
+    references:
+      - "https://blueprint.asd.gov.au/configuration/entra-id/protection/conditional-access/policies/block-access-via-legacy-auth/"
+      - "https://learn.microsoft.com/en-us/graph/api/conditionalaccessroot-list-policies?view=graph-rest-1.0"
+
+  - id: "ENTRA-CA-003"
+    section: "Entra ID / Conditional Access / Policies"
+    title: "Require phishing-resistant or strong multi-factor authentication"
+    description: >-
+      An enabled Conditional Access policy must require MFA or a strong
+      authentication strength for all users across all cloud applications.
+    severity: "critical"
+    expected:
+      operator: "policy_exists"
+      rule: "ca_require_strong_auth"
+      value: true
+    api_source:
+      kind: "graph"
+      version: "v1.0"
+      method: "GET"
+      endpoint: "/identity/conditionalAccess/policies"
+      permissions:
+        - "Policy.Read.All"
+      junction_operation: "graph.identity.conditional_access.policies.list"
+    ism_controls:
+      - "ISM-1679"
+      - "ISM-1681"
+    essential_eight:
+      - "Multi-factor authentication"
+    references:
+      - "https://blueprint.asd.gov.au/configuration/entra-id/protection/conditional-access/policies/strong-authentication/"
+      - "https://learn.microsoft.com/en-us/graph/api/conditionalaccessroot-list-policies?view=graph-rest-1.0"
+
+  - id: "ENTRA-CA-004"
+    section: "Entra ID / Conditional Access / Policies"
+    title: "Require compliant devices"
+    description: >-
+      An enabled Conditional Access policy must require compliant devices
+      (compliantDevice grant control) for access to organisational resources.
+    severity: "high"
+    expected:
+      operator: "policy_exists"
+      rule: "ca_require_compliant_device"
+      value: true
+    api_source:
+      kind: "graph"
+      version: "v1.0"
+      method: "GET"
+      endpoint: "/identity/conditionalAccess/policies"
+      permissions:
+        - "Policy.Read.All"
+      junction_operation: "graph.identity.conditional_access.policies.list"
+    ism_controls:
+      - "ISM-1507"
+      - "ISM-1546"
+    references:
+      - "https://blueprint.asd.gov.au/configuration/entra-id/protection/conditional-access/policies/compliant-devices/"
+      - "https://learn.microsoft.com/en-us/graph/api/conditionalaccessroot-list-policies?view=graph-rest-1.0"
+
+  - id: "ENTRA-CA-005"
+    section: "Entra ID / Conditional Access / Policies"
+    title: "Block high-risk users"
+    description: >-
+      An enabled Conditional Access policy must block sign-ins for users
+      classified as high risk by Microsoft Entra ID Protection.
+    severity: "critical"
+    expected:
+      operator: "policy_exists"
+      rule: "ca_block_high_risk_users"
+      value: true
+    api_source:
+      kind: "graph"
+      version: "v1.0"
+      method: "GET"
+      endpoint: "/identity/conditionalAccess/policies"
+      permissions:
+        - "Policy.Read.All"
+      junction_operation: "graph.identity.conditional_access.policies.list"
+    ism_controls:
+      - "ISM-1507"
+    references:
+      - "https://blueprint.asd.gov.au/configuration/entra-id/protection/conditional-access/policies/block-high-risk-users/"
+      - "https://learn.microsoft.com/en-us/graph/api/conditionalaccessroot-list-policies?view=graph-rest-1.0"
+
+  - id: "ENTRA-CA-006"
+    section: "Entra ID / Conditional Access / Policies"
+    title: "Block high-risk sign-ins"
+    description: >-
+      An enabled Conditional Access policy must block sign-ins classified as
+      high risk by Microsoft Entra ID Protection.
+    severity: "critical"
+    expected:
+      operator: "policy_exists"
+      rule: "ca_block_high_risk_sign_ins"
+      value: true
+    api_source:
+      kind: "graph"
+      version: "v1.0"
+      method: "GET"
+      endpoint: "/identity/conditionalAccess/policies"
+      permissions:
+        - "Policy.Read.All"
+      junction_operation: "graph.identity.conditional_access.policies.list"
+    ism_controls:
+      - "ISM-1507"
+    references:
+      - "https://blueprint.asd.gov.au/configuration/entra-id/protection/conditional-access/policies/block-high-risk-sign-ins/"
+      - "https://learn.microsoft.com/en-us/graph/api/conditionalaccessroot-list-policies?view=graph-rest-1.0"
+
+  - id: "ENTRA-CA-007"
+    section: "Entra ID / Conditional Access / Policies"
+    title: "Block access from unapproved countries"
+    description: >-
+      An enabled Conditional Access policy must block access from all locations
+      except approved named locations.
+    severity: "high"
+    expected:
+      operator: "policy_exists"
+      rule: "ca_block_unapproved_countries"
+      value: true
+    api_source:
+      kind: "graph"
+      version: "v1.0"
+      method: "GET"
+      endpoint: "/identity/conditionalAccess/policies"
+      permissions:
+        - "Policy.Read.All"
+      junction_operation: "graph.identity.conditional_access.policies.list"
+    ism_controls:
+      - "ISM-1507"
+    references:
+      - "https://blueprint.asd.gov.au/configuration/entra-id/protection/conditional-access/policies/block-unapproved-countries/"
+      - "https://learn.microsoft.com/en-us/graph/api/conditionalaccessroot-list-policies?view=graph-rest-1.0"
+
+  - id: "ENTRA-CA-008"
+    section: "Entra ID / Conditional Access / Policies"
+    title: "Limit administrator session lifetime"
+    description: >-
+      An enabled Conditional Access policy targeting privileged directory roles
+      must enforce a bounded sign-in frequency and non-persistent browser
+      sessions.
+    severity: "high"
+    expected:
+      operator: "policy_exists"
+      rule: "ca_limit_admin_sessions"
+      value: true
+    api_source:
+      kind: "graph"
+      version: "v1.0"
+      method: "GET"
+      endpoint: "/identity/conditionalAccess/policies"
+      permissions:
+        - "Policy.Read.All"
+      junction_operation: "graph.identity.conditional_access.policies.list"
+    ism_controls:
+      - "ISM-0445"
+      - "ISM-1507"
+    essential_eight:
+      - "Restrict administrative privileges"
+    references:
+      - "https://blueprint.asd.gov.au/configuration/entra-id/protection/conditional-access/policies/limit-admin-sessions/"
+      - "https://learn.microsoft.com/en-us/graph/api/conditionalaccessroot-list-policies?view=graph-rest-1.0"
+
+  - id: "ENTRA-PIM-001"
+    section: "Entra ID / Identity governance / Privileged Identity Management"
+    title: "Permanent active Global Administrator assignments minimised"
+    description: >-
+      No more than two permanent (non-expiring) active Global Administrator
+      assignments (reserved for break-glass accounts) should exist; operational
+      administrators must use time-bound PIM eligible activations.
+    severity: "critical"
+    expected:
+      operator: "policy_exists"
+      rule: "entra_pim_global_admin_max_2"
+      value: 2
+    api_source:
+      kind: "graph"
+      version: "v1.0"
+      method: "GET"
+      endpoint: "/roleManagement/directory/roleAssignmentScheduleInstances"
+      permissions:
+        - "RoleManagement.Read.Directory"
+    ism_controls:
+      - "ISM-0445"
+      - "ISM-1175"
+    essential_eight:
+      - "Restrict administrative privileges"
+    references:
+      - "https://blueprint.asd.gov.au/configuration/entra-id/identity-governance/"
+      - "https://learn.microsoft.com/en-us/graph/api/rbacapplication-list-roleassignmentscheduleinstances?view=graph-rest-1.0"
+
+  - id: "ENTRA-BG-001"
+    section: "Entra ID / Users / Break-glass accounts"
+    title: "Emergency access account operational governance"
+    description: >-
+      Two cloud-only emergency access (break-glass) accounts must be maintained,
+      excluded from Conditional Access policies, monitored with alerting and
+      tested periodically.
+    severity: "high"
+    expected:
+      operator: "manual"
+      value: "Two cloud-only break-glass accounts verified with alerting and periodic testing"
+    api_source:
+      kind: "manual"
+      manual_reason: >-
+        Operational credential storage, physical vaulting, alerting rules and
+        periodic break-glass testing records cannot be verified solely through
+        Microsoft Graph.
+      manual_guidance: >-
+        Confirm two cloud-only Global Administrator emergency accounts exist,
+        are excluded from Conditional Access policies, have sign-in alert rules
+        configured in Sentinel or Azure Monitor, and have current test logs.
+    ism_controls:
+      - "ISM-0445"
+      - "ISM-1175"
+    essential_eight:
+      - "Restrict administrative privileges"
+    references:
+      - "https://blueprint.asd.gov.au/configuration/entra-id/users/break-glass-accounts/"
+      - "https://learn.microsoft.com/en-us/entra/identity/role-based-access-control/security-emergency-access"
+
+  - id: "ENTRA-SSPR-001"
+    section: "Entra ID / Protection / Password reset"
+    title: "Self-service password reset notifications and customisation"
+    description: >-
+      Self-service password reset (SSPR) notifications, administrator alerts and
+      registration customisation must align with the Blueprint baseline.
+    severity: "low"
+    expected:
+      operator: "manual"
+      value: "SSPR notifications and admin alerts verified in Microsoft Entra admin center"
+    api_source:
+      kind: "manual"
+      manual_reason: >-
+        Microsoft Entra self-service password reset portal notification and
+        customisation settings have no full GA read-only Microsoft Graph API.
+      manual_guidance: >-
+        Inspect Entra admin center -> Protection -> Password reset (Properties,
+        Authentication methods, Registration and Notifications) and record
+        evidence screenshots for the IRAP assessor.
+    ism_controls:
+      - "ISM-0421"
+    references:
+      - "https://blueprint.asd.gov.au/configuration/entra-id/protection/password-reset/notifications/"
+      - "https://learn.microsoft.com/en-us/entra/identity/authentication/concept-sspr-howitworks"

@@ -1,0 +1,93 @@
+{
+  "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#identity/conditionalAccess/policies",
+  "value": [
+    {
+      "id": "00000000-0000-0000-0000-000000000201",
+      "displayName": "BP - Block access via legacy authentication",
+      "state": "enabled",
+      "conditions": {
+        "clientAppTypes": ["exchangeActiveSync", "other"],
+        "users": {"includeUsers": ["All"]},
+        "applications": {"includeApplications": ["All"]}
+      },
+      "grantControls": {"operator": "OR", "builtInControls": ["block"]}
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000202",
+      "displayName": "BP - Require strong phishing-resistant authentication",
+      "state": "enabled",
+      "conditions": {
+        "users": {"includeUsers": ["All"]},
+        "applications": {"includeApplications": ["All"]}
+      },
+      "grantControls": {
+        "operator": "OR",
+        "authenticationStrength": {
+          "id": "00000000-0000-0000-0000-000000000004",
+          "displayName": "Phishing-resistant MFA"
+        }
+      }
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000203",
+      "displayName": "BP - Require compliant devices",
+      "state": "enabled",
+      "conditions": {
+        "users": {"includeUsers": ["All"]},
+        "applications": {"includeApplications": ["All"]}
+      },
+      "grantControls": {"operator": "OR", "builtInControls": ["compliantDevice"]}
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000204",
+      "displayName": "BP - Block high-risk users",
+      "state": "enabled",
+      "conditions": {
+        "userRiskLevels": ["high"],
+        "users": {"includeUsers": ["All"]},
+        "applications": {"includeApplications": ["All"]}
+      },
+      "grantControls": {"operator": "OR", "builtInControls": ["block"]}
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000205",
+      "displayName": "BP - Block high-risk sign-ins",
+      "state": "enabled",
+      "conditions": {
+        "signInRiskLevels": ["high"],
+        "users": {"includeUsers": ["All"]},
+        "applications": {"includeApplications": ["All"]}
+      },
+      "grantControls": {"operator": "OR", "builtInControls": ["block"]}
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000206",
+      "displayName": "BP - Block unapproved countries",
+      "state": "enabled",
+      "conditions": {
+        "users": {"includeUsers": ["All"]},
+        "applications": {"includeApplications": ["All"]},
+        "locations": {
+          "includeLocations": ["All"],
+          "excludeLocations": ["00000000-0000-0000-0000-000000000101"]
+        }
+      },
+      "grantControls": {"operator": "OR", "builtInControls": ["block"]}
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000207",
+      "displayName": "BP - Limit administrator sessions",
+      "state": "enabled",
+      "conditions": {
+        "users": {
+          "includeRoles": ["62e90394-69f5-4237-9190-012177145e10"]
+        },
+        "applications": {"includeApplications": ["All"]}
+      },
+      "sessionControls": {
+        "signInFrequency": {"value": 4, "type": "hours", "isEnabled": true},
+        "persistentBrowser": {"mode": "never", "isEnabled": true}
+      }
+    }
+  ]
+}

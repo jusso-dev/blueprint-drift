@@ -1,0 +1,12 @@
+{
+  "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#identity/conditionalAccess/namedLocations",
+  "value": [
+    {
+      "@odata.type": "#microsoft.graph.countryNamedLocation",
+      "id": "00000000-0000-0000-0000-000000000101",
+      "displayName": "Approved Countries - Australia",
+      "countriesAndRegions": ["AU"],
+      "includeUnknownCountriesAndRegions": false
+    }
+  ]
+}

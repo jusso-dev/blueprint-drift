@@ -1,0 +1,23 @@
+{
+  "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#roleManagement/directory/roleAssignmentScheduleInstances",
+  "value": [
+    {
+      "principalId": "00000000-0000-0000-0000-000000000301",
+      "roleDefinitionId": "62e90394-69f5-4237-9190-012177145e10",
+      "assignmentType": "Assigned",
+      "endDateTime": null
+    },
+    {
+      "principalId": "00000000-0000-0000-0000-000000000302",
+      "roleDefinitionId": "62e90394-69f5-4237-9190-012177145e10",
+      "assignmentType": "Assigned",
+      "endDateTime": null
+    },
+    {
+      "principalId": "00000000-0000-0000-0000-000000000303",
+      "roleDefinitionId": "62e90394-69f5-4237-9190-012177145e10",
+      "assignmentType": "Activated",
+      "endDateTime": "2026-11-21T16:00:00Z"
+    }
+  ]
+}

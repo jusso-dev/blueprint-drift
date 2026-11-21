@@ -1,0 +1,252 @@
+schema_version: "1.0"
+blueprint_version: "v1.4.0"
+domain: "exchange-online"
+settings:
+  - id: "EXO-DNS-001"
+    section: "Exchange Online / External configuration"
+    title: "Verified custom accepted domains inventoried for SPF, DKIM and DMARC"
+    description: >-
+      Custom organisational email domains must be verified in Microsoft 365 and
+      configured with SPF (-all), DKIM signing and DMARC (p=reject).
+    severity: "high"
+    expected:
+      operator: "policy_exists"
+      rule: "exo_verified_domains_present"
+      value: true
+    api_source:
+      kind: "graph"
+      version: "v1.0"
+      method: "GET"
+      endpoint: "/domains"
+      permissions:
+        - "Domain.Read.All"
+      junction_operation: "graph.domains.list"
+    ism_controls:
+      - "ISM-0263"
+      - "ISM-1425"
+    references:
+      - "https://blueprint.asd.gov.au/configuration/exchange-online/external-configuration/"
+      - "https://learn.microsoft.com/en-us/defender-office-365/email-authentication-about"
+
+  - id: "EXO-MAIL-001"
+    section: "Exchange Online / Settings / Mail flow"
+    title: "Disable SMTP AUTH for the organisation"
+    description: >-
+      Authenticated SMTP client submission (SMTP AUTH) must be disabled
+      organisation-wide to prevent legacy credential abuse.
+    severity: "high"
+    expected:
+      operator: "manual"
+      value: "SmtpClientAuthenticationDisabled: true"
+    api_source:
+      kind: "manual"
+      manual_reason: >-
+        Exchange Online transport configuration is not exposed by Microsoft Graph
+        and requires the ExchangeOnlineManagement PowerShell module.
+      manual_guidance: >-
+        Connect read-only with Connect-ExchangeOnline and run Get-TransportConfig
+        | Select-Object SmtpClientAuthenticationDisabled.
+    ism_controls:
+      - "ISM-1507"
+      - "ISM-1680"
+    essential_eight:
+      - "Multi-factor authentication"
+    references:
+      - "https://blueprint.asd.gov.au/configuration/exchange-online/settings/mail-flow/"
+      - "https://learn.microsoft.com/en-us/exchange/clients-and-mobile-in-exchange-online/authenticated-client-smtp-submission"
+
+  - id: "EXO-MAIL-002"
+    section: "Exchange Online / Settings / Mail flow"
+    title: "Disable legacy TLS clients in Exchange Online"
+    description: >-
+      Legacy TLS client opt-in must remain disabled so mail transport enforces
+      TLS 1.2 or higher.
+    severity: "high"
+    expected:
+      operator: "manual"
+      value: "AllowLegacyTLSClients: false"
+    api_source:
+      kind: "manual"
+      manual_reason: >-
+        No Microsoft Graph read API exposes Exchange Online AllowLegacyTLSClients;
+        requires ExchangeOnlineManagement PowerShell.
+      manual_guidance: >-
+        Run Get-TransportConfig | Select-Object AllowLegacyTLSClients and confirm
+        the value is False.
+    ism_controls:
+      - "ISM-1139"
+    references:
+      - "https://blueprint.asd.gov.au/configuration/exchange-online/settings/mail-flow/"
+      - "https://learn.microsoft.com/en-us/powershell/module/exchange/get-transportconfig"
+
+  - id: "EXO-MAIL-003"
+    section: "Exchange Online / Settings / Mail flow"
+    title: "Reply-all storm protection enabled"
+    description: >-
+      Reply-all storm protection must be enabled with Blueprint thresholds
+      (minimum recipients 2500, minimum reply-alls 10, block duration 6 hours).
+    severity: "low"
+    expected:
+      operator: "manual"
+      value: "ReplyAllStormProtectionEnabled: true"
+    api_source:
+      kind: "manual"
+      manual_reason: >-
+        Reply-all storm protection settings are only accessible through Exchange
+        Online PowerShell or the Exchange admin center.
+      manual_guidance: >-
+        Run Get-TransportConfig | Select-Object ReplyAllStorm* and verify values
+        against the Blueprint baseline.
+    ism_controls:
+      - "ISM-1507"
+    references:
+      - "https://blueprint.asd.gov.au/configuration/exchange-online/settings/mail-flow/"
+      - "https://learn.microsoft.com/en-us/exchange/mail-flow-best-practices/reply-all-storm-protection/reply-all-storm-protection"
+
+  - id: "EXO-MAIL-004"
+    section: "Exchange Online / Mail flow / Remote domains"
+    title: "Block automatic email forwarding to external domains"
+    description: >-
+      Automatic email forwarding to external remote domains must be disabled on
+      the Default remote domain policy.
+    severity: "high"
+    expected:
+      operator: "manual"
+      value: "AutoForwardEnabled: false"
+    api_source:
+      kind: "manual"
+      manual_reason: >-
+        Exchange Online remote domain settings are only exposed via
+        ExchangeOnlineManagement PowerShell.
+      manual_guidance: >-
+        Run Get-RemoteDomain | Select-Object Name, AutoForwardEnabled and confirm
+        AutoForwardEnabled is False for Default.
+    ism_controls:
+      - "ISM-0263"
+    references:
+      - "https://blueprint.asd.gov.au/configuration/exchange-online/mail-flow/remote-domains/"
+      - "https://learn.microsoft.com/en-us/exchange/mail-flow-best-practices/remote-domains/remote-domains"
+
+  - id: "EXO-MAIL-005"
+    section: "Exchange Online / Mail flow / Rules"
+    title: "Mail flow transport rules enforce PSPF markings and security controls"
+    description: >-
+      Exchange Online mail flow transport rules must align with Blueprint
+      protective marking and message handling rules.
+    severity: "medium"
+    expected:
+      operator: "manual"
+      value: "Blueprint transport rules enabled and verified"
+    api_source:
+      kind: "manual"
+      manual_reason: >-
+        Exchange Online transport rules have no public read-only Microsoft Graph
+        endpoint; requires ExchangeOnlineManagement PowerShell.
+      manual_guidance: >-
+        Run Get-TransportRule | Select-Object Name, State, Priority, Mode and
+        compare against the Blueprint mail flow rules baseline.
+    ism_controls:
+      - "ISM-0263"
+    references:
+      - "https://blueprint.asd.gov.au/configuration/exchange-online/mail-flow/rules/"
+      - "https://learn.microsoft.com/en-us/exchange/security-and-compliance/mail-flow-rules/mail-flow-rules"
+
+  - id: "EXO-MAIL-006"
+    section: "Exchange Online / Mail flow / Connectors"
+    title: "Partner mail connectors enforce TLS with certificate validation"
+    description: >-
+      Inbound and outbound Exchange Online partner connectors must require TLS
+      with domain or certificate validation.
+    severity: "medium"
+    expected:
+      operator: "manual"
+      value: "TLS required with certificate validation on connectors"
+    api_source:
+      kind: "manual"
+      manual_reason: >-
+        Exchange Online connectors are only exposed via ExchangeOnlineManagement
+        PowerShell.
+      manual_guidance: >-
+        Run Get-InboundConnector and Get-OutboundConnector and verify RequireTls
+        and TlsSettings values.
+    ism_controls:
+      - "ISM-1139"
+    references:
+      - "https://blueprint.asd.gov.au/configuration/exchange-online/mail-flow/connectors/"
+      - "https://learn.microsoft.com/en-us/exchange/mail-flow-best-practices/use-connectors-to-configure-mail-flow/use-connectors-to-configure-mail-flow"
+
+  - id: "EXO-OWA-001"
+    section: "Exchange Online / Roles / Outlook on the web policies"
+    title: "Restrict third-party cloud storage providers in Outlook on the web"
+    description: >-
+      AdditionalStorageProvidersAvailable must be disabled on Outlook on the web
+      mailbox policies to prevent unapproved cloud file sharing.
+    severity: "medium"
+    expected:
+      operator: "manual"
+      value: "AdditionalStorageProvidersAvailable: false"
+    api_source:
+      kind: "manual"
+      manual_reason: >-
+        Outlook on the web mailbox policies are only exposed via
+        ExchangeOnlineManagement PowerShell.
+      manual_guidance: >-
+        Run Get-OwaMailboxPolicy | Select-Object Name,
+        AdditionalStorageProvidersAvailable and confirm False.
+    ism_controls:
+      - "ISM-1084"
+    references:
+      - "https://blueprint.asd.gov.au/configuration/exchange-online/roles/outlook-web-app-policies/"
+      - "https://learn.microsoft.com/en-us/powershell/module/exchange/get-owamailboxpolicy"
+
+  - id: "EXO-AUDIT-001"
+    section: "Exchange Online / Auditing"
+    title: "Unified audit log ingestion and mailbox auditing enabled"
+    description: >-
+      Organisation-wide mailbox auditing by default and unified audit log
+      ingestion must remain enabled.
+    severity: "high"
+    expected:
+      operator: "manual"
+      value: "AuditDisabled: false and UnifiedAuditLogIngestionEnabled: true"
+    api_source:
+      kind: "manual"
+      manual_reason: >-
+        Exchange Online audit configuration flags require ExchangeOnlineManagement
+        PowerShell verification.
+      manual_guidance: >-
+        Run Get-OrganizationConfig | Select-Object AuditDisabled and
+        Get-AdminAuditLogConfig | Select-Object UnifiedAuditLogIngestionEnabled.
+    ism_controls:
+      - "ISM-0580"
+      - "ISM-1405"
+    references:
+      - "https://blueprint.asd.gov.au/configuration/purview/audit/audit-policies/"
+      - "https://learn.microsoft.com/en-us/purview/audit-log-enable-disable"
+
+  - id: "EXO-MBOX-001"
+    section: "Exchange Online / External configuration"
+    title: "Modern authentication enabled for Exchange Online"
+    description: >-
+      OAuth 2.0 modern authentication must be enabled organisation-wide for
+      Exchange Online clients.
+    severity: "high"
+    expected:
+      operator: "manual"
+      value: "OAuth2ClientProfileEnabled: true"
+    api_source:
+      kind: "manual"
+      manual_reason: >-
+        Exchange Online OAuth2ClientProfileEnabled requires
+        ExchangeOnlineManagement PowerShell verification.
+      manual_guidance: >-
+        Run Get-OrganizationConfig | Select-Object OAuth2ClientProfileEnabled and
+        confirm True.
+    ism_controls:
+      - "ISM-1679"
+      - "ISM-1680"
+    essential_eight:
+      - "Multi-factor authentication"
+    references:
+      - "https://blueprint.asd.gov.au/configuration/exchange-online/external-configuration/"
+      - "https://learn.microsoft.com/en-us/exchange/clients-and-mobile-in-exchange-online/enable-or-disable-modern-authentication-in-exchange-online"

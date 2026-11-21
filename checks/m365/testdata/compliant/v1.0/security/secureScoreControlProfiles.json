@@ -1,0 +1,25 @@
+{
+  "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#security/secureScoreControlProfiles",
+  "value": [
+    {
+      "id": "AdminMFAV2",
+      "title": "Ensure multifactor authentication is enabled for all users in administrative roles",
+      "controlStateUpdates": [
+        {
+          "state": "Default",
+          "comment": "Enforced by Blueprint Conditional Access policies"
+        }
+      ]
+    },
+    {
+      "id": "OneAdmin",
+      "title": "Designate more than one global admin",
+      "controlStateUpdates": [
+        {
+          "state": "Ignored",
+          "comment": "Risk accepted under IRAP SSP-2026-01: two break-glass accounts maintained"
+        }
+      ]
+    }
+  ]
+}

@@ -42,6 +42,12 @@ jobs:
       - name: Run style and hygiene check
         run: python3 scripts/style-check.py
 
+      - name: Verify container image build
+        run: |
+          docker build -t blueprint-drift:ci-test .
+          docker run --rm blueprint-drift:ci-test version
+          docker run --rm blueprint-drift:ci-test validate --blueprint /etc/blueprint-drift/settings
+
   build-and-test:
     name: Build and test (${{ matrix.os }})
     runs-on: ${{ matrix.os }}

@@ -1,0 +1,14 @@
+{
+  "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#deviceAppManagement/androidManagedAppProtections",
+  "value": [
+    {
+      "id": "00000000-0000-0000-0000-000000000802",
+      "displayName": "BP - Android Managed App Protection Policy",
+      "pinRequired": true,
+      "minimumPinLength": 6,
+      "maximumPinRetries": 5,
+      "allowedOutboundDataTransferDestinations": "managedApps",
+      "dataBackupBlocked": true
+    }
+  ]
+}

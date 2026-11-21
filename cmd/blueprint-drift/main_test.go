@@ -52,6 +52,7 @@ func TestRunScanAndDiffSnapshots(t *testing.T) {
 	code := run([]string{
 		"scan",
 		"--blueprint", bpDir,
+		"--domain", "entra-id",
 		"--fixtures", fxDir,
 		"--out", outDir,
 		"--snapshot-dir", snapDir,
@@ -66,6 +67,7 @@ func TestRunScanAndDiffSnapshots(t *testing.T) {
 	code = run([]string{
 		"scan",
 		"--blueprint", bpDir,
+		"--domain", "entra-id",
 		"--fixtures", fxDir,
 		"--out", outDir,
 		"--snapshot-dir", snapDir,

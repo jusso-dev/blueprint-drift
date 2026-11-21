@@ -6,9 +6,11 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/jusso-dev/blueprint-drift/checks/entra"
+	"github.com/jusso-dev/blueprint-drift/checks/intune"
 	"github.com/jusso-dev/blueprint-drift/evidence"
 	"github.com/jusso-dev/blueprint-drift/src/blueprint"
 	"github.com/jusso-dev/blueprint-drift/src/engine"
@@ -70,6 +72,7 @@ func runScan(args []string, stdout, stderr io.Writer) int {
 	fs := flag.NewFlagSet("scan", flag.ContinueOnError)
 	fs.SetOutput(stderr)
 	bpDir := fs.String("blueprint", "blueprint/settings", "Path to Blueprint YAML settings directory")
+	domainFilter := fs.String("domain", "", "Optional comma-separated domain filter (e.g. entra-id,intune)")
 	fixturesDir := fs.String("fixtures", "", "Path to offline Graph JSON fixtures directory")
 	outDir := fs.String("out", "evidence-pack", "Output directory for IRAP evidence pack")
 	snapshotDir := fs.String("snapshot-dir", "", "Optional directory to persist a local JSON snapshot")
@@ -90,6 +93,13 @@ func runScan(args []string, stdout, stderr io.Writer) int {
 	if err != nil {
 		fmt.Fprintf(stderr, "load blueprint settings: %v\n", err)
 		return 1
+	}
+	if strings.TrimSpace(*domainFilter) != "" {
+		catalogs = filterCatalogsByDomain(catalogs, *domainFilter)
+		if len(catalogs) == 0 {
+			fmt.Fprintf(stderr, "no Blueprint catalogs matched --domain %q\n", *domainFilter)
+			return 2
+		}
 	}
 
 	mode := *backend
@@ -166,6 +176,7 @@ func runScan(args []string, stdout, stderr io.Writer) int {
 
 	reg := engine.NewRegistry()
 	entra.Register(reg)
+	intune.Register(reg)
 
 	runner := &engine.Runner{
 		Client:   client,
@@ -278,6 +289,23 @@ func runDiff(args []string, stdout, stderr io.Writer) int {
 		return 3
 	}
 	return 0
+}
+
+func filterCatalogsByDomain(catalogs []*blueprint.Catalog, filter string) []*blueprint.Catalog {
+	allowed := make(map[string]bool)
+	for _, part := range strings.Split(filter, ",") {
+		p := strings.ToLower(strings.TrimSpace(part))
+		if p != "" {
+			allowed[p] = true
+		}
+	}
+	var out []*blueprint.Catalog
+	for _, c := range catalogs {
+		if allowed[strings.ToLower(c.Domain)] {
+			out = append(out, c)
+		}
+	}
+	return out
 }
 
 func collectJunctionOps(catalogs []*blueprint.Catalog) map[string]string {

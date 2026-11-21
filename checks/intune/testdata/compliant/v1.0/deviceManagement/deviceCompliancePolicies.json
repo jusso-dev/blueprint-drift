@@ -1,0 +1,27 @@
+{
+  "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#deviceManagement/deviceCompliancePolicies",
+  "value": [
+    {
+      "@odata.type": "#microsoft.graph.windows10CompliancePolicy",
+      "id": "00000000-0000-0000-0000-000000000401",
+      "displayName": "BP - Windows 10 and 11 Compliance Policy",
+      "bitLockerEnabled": true,
+      "secureBootEnabled": true,
+      "codeIntegrityEnabled": true,
+      "defenderEnabled": true,
+      "rtpEnabled": true,
+      "firewallEnabled": true,
+      "antivirusRequired": true,
+      "deviceThreatProtectionEnabled": true,
+      "deviceThreatProtectionRequiredSecurityLevel": "low"
+    },
+    {
+      "@odata.type": "#microsoft.graph.iosCompliancePolicy",
+      "id": "00000000-0000-0000-0000-000000000402",
+      "displayName": "BP - Apple iOS and iPadOS Compliance Policy",
+      "securityBlockJailbrokenDevices": true,
+      "passcodeRequired": true,
+      "passcodeMinimumLength": 6
+    }
+  ]
+}

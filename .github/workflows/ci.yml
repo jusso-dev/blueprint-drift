@@ -10,6 +10,33 @@ permissions:
   contents: read
 
 jobs:
+  lint-and-style:
+    name: Lint and style check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.24"
+
+      - name: Check Go formatting
+        run: |
+          unformatted=$(gofmt -s -l .)
+          if [ -n "$unformatted" ]; then
+            echo "The following Go files are not formatted with gofmt -s:"
+            echo "$unformatted"
+            exit 1
+          fi
+
+      - name: Run go vet
+        run: go vet ./...
+
+      - name: Run style and hygiene check
+        run: python3 scripts/style-check.py
+
   build-and-test:
     name: Build and test (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
@@ -26,10 +53,15 @@ jobs:
         with:
           go-version: "1.24"
 
-      - name: Run unit tests
+      - name: Run unit tests (Unix with race detector)
+        if: runner.os != 'Windows'
+        run: go test -race -v ./...
+
+      - name: Run unit tests (Windows)
+        if: runner.os == 'Windows'
         run: go test -v ./...
 
-      - name: Build binary
+      - name: Build static binary
         env:
           CGO_ENABLED: "0"
         run: go build -o blueprint-drift${{ runner.os == 'Windows' && '.exe' || '' }} ./cmd/blueprint-drift

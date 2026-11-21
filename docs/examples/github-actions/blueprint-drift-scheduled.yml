@@ -1,0 +1,142 @@
+# Example scheduled GitHub Actions workflow for blueprint-drift.
+# Copy to .github/workflows/blueprint-drift-scheduled.yml in your compliance
+# repository and configure repository secrets (never commit real tenant IDs or
+# private keys).
+#
+# Required secrets:
+#   BLUEPRINT_TENANT_ID   - Target Microsoft Entra tenant GUID
+#   BLUEPRINT_CLIENT_ID   - Read-only Entra app registration client GUID
+#   BLUEPRINT_CERT_PEM    - Public X.509 certificate in PEM format
+#   BLUEPRINT_KEY_PEM     - Matching RSA private key in PEM format
+
+name: Scheduled Blueprint Drift Check
+
+on:
+  schedule:
+    # Run daily at 20:00 UTC (06:00 AEST / 07:00 AEDT).
+    - cron: "0 20 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+  actions: read
+
+jobs:
+  drift-check:
+    name: Run read-only Blueprint drift scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.24"
+
+      - name: Build blueprint-drift binary
+        env:
+          CGO_ENABLED: "0"
+        run: go build -o bin/blueprint-drift ./cmd/blueprint-drift
+
+      - name: Restore previous snapshot artefact
+        id: restore
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p previous-snapshots
+          RUN_ID=$(gh run list \
+            --workflow "Scheduled Blueprint Drift Check" \
+            --status success \
+            --limit 1 \
+            --json databaseId \
+            --jq '.[0].databaseId // empty')
+          if [ -n "$RUN_ID" ]; then
+            gh run download "$RUN_ID" --name blueprint-drift-snapshots --dir previous-snapshots || true
+          fi
+
+      - name: Materialise app-only certificate to runner temp directory
+        env:
+          CERT_PEM: ${{ secrets.BLUEPRINT_CERT_PEM }}
+          KEY_PEM: ${{ secrets.BLUEPRINT_KEY_PEM }}
+        run: |
+          umask 077
+          printf '%s\n' "$CERT_PEM" > "${RUNNER_TEMP}/app-cert.pem"
+          printf '%s\n' "$KEY_PEM" > "${RUNNER_TEMP}/app-key.pem"
+
+      - name: Execute read-only Blueprint scan
+        env:
+          TENANT_ID: ${{ secrets.BLUEPRINT_TENANT_ID }}
+          CLIENT_ID: ${{ secrets.BLUEPRINT_CLIENT_ID }}
+        run: |
+          mkdir -p snapshots evidence-pack
+          ./bin/blueprint-drift scan \
+            --blueprint blueprint/settings \
+            --backend direct \
+            --tenant-id "${TENANT_ID:-00000000-0000-0000-0000-000000000000}" \
+            --client-id "${CLIENT_ID:-11111111-1111-1111-1111-111111111111}" \
+            --cert "${RUNNER_TEMP}/app-cert.pem" \
+            --key "${RUNNER_TEMP}/app-key.pem" \
+            --snapshot-dir snapshots \
+            --out evidence-pack
+
+      - name: Diff against previous snapshot
+        id: diff
+        run: |
+          PREV_FILE=$(ls -1t previous-snapshots/run-*.json 2>/dev/null | head -n 1 || true)
+          CURR_FILE=$(ls -1t snapshots/run-*.json 2>/dev/null | head -n 1 || true)
+          if [ -z "$PREV_FILE" ] || [ -z "$CURR_FILE" ]; then
+            echo "No previous snapshot available for comparison."
+            echo "drift=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          set +e
+          ./bin/blueprint-drift diff \
+            --from "$PREV_FILE" \
+            --to "$CURR_FILE" \
+            --format markdown \
+            --out drift-report.md \
+            --fail-on-drift
+          STATUS=$?
+          set -e
+
+          if [ "$STATUS" -eq 3 ]; then
+            echo "drift=true" >> "$GITHUB_OUTPUT"
+          elif [ "$STATUS" -eq 0 ]; then
+            echo "drift=false" >> "$GITHUB_OUTPUT"
+          else
+            exit "$STATUS"
+          fi
+
+      - name: Remove temporary private key material
+        if: always()
+        run: rm -f "${RUNNER_TEMP}/app-cert.pem" "${RUNNER_TEMP}/app-key.pem"
+
+      - name: Upload snapshot artefact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: blueprint-drift-snapshots
+          path: snapshots/
+          retention-days: 90
+
+      - name: Upload IRAP evidence pack artefact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: irap-evidence-pack-${{ github.run_id }}
+          path: evidence-pack/
+          retention-days: 90
+
+      - name: Open GitHub issue when drift is detected
+        if: steps.diff.outputs.drift == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh issue create \
+            --title "Blueprint configuration drift detected ($(date -u +%Y-%m-%d))" \
+            --body-file drift-report.md \
+            --label "drift"

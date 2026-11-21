@@ -1,0 +1,260 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/jusso-dev/blueprint-drift/blob/main/blueprint/schema/settings.schema.json",
+  "title": "ASD Blueprint for Secure Cloud Setting Catalog",
+  "description": "Schema for machine-readable setting files evaluated by blueprint-drift against the ASD Blueprint for Secure Cloud.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "blueprint_version",
+    "domain",
+    "settings"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "1.0",
+      "description": "Schema version of this catalog file."
+    },
+    "blueprint_version": {
+      "type": "string",
+      "pattern": "^v[0-9]+\\.[0-9]+\\.[0-9]+$",
+      "description": "ASD Blueprint for Secure Cloud release version (for example v1.4.0)."
+    },
+    "domain": {
+      "type": "string",
+      "enum": [
+        "entra-id",
+        "intune",
+        "exchange-online",
+        "sharepoint-online",
+        "teams",
+        "defender"
+      ],
+      "description": "Primary Microsoft 365 or Entra domain covered by this catalog file."
+    },
+    "settings": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/setting"
+      }
+    }
+  },
+  "$defs": {
+    "setting": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "section",
+        "title",
+        "description",
+        "severity",
+        "expected",
+        "api_source",
+        "ism_controls",
+        "references"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[A-Z]+-[A-Z0-9]+-[0-9]{3}$",
+          "description": "Unique stable setting identifier (for example ENTRA-PROP-001)."
+        },
+        "section": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Blueprint section path."
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Concise human-readable title of the setting."
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Plain Australian English explanation of the Blueprint requirement."
+        },
+        "severity": {
+          "type": "string",
+          "enum": [
+            "critical",
+            "high",
+            "medium",
+            "low"
+          ],
+          "description": "Risk severity if the tenant drifts from the expected baseline."
+        },
+        "expected": {
+          "$ref": "#/$defs/expected"
+        },
+        "api_source": {
+          "$ref": "#/$defs/api_source"
+        },
+        "ism_controls": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "pattern": "^ISM-[0-9]{4}$"
+          },
+          "description": "ASD Information Security Manual (ISM) control identifiers mapped to this setting."
+        },
+        "essential_eight": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "Application control",
+              "Patch applications",
+              "Configure Microsoft Office macro settings",
+              "User application hardening",
+              "Restrict administrative privileges",
+              "Patch operating systems",
+              "Multi-factor authentication",
+              "Regular backups"
+            ]
+          },
+          "description": "ASD Essential Eight mitigation strategies supported by this setting."
+        },
+        "references": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "format": "uri",
+            "pattern": "^https://"
+          },
+          "description": "Official reference URLs (blueprint.asd.gov.au, cyber.gov.au, learn.microsoft.com)."
+        }
+      }
+    },
+    "expected": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "operator"
+      ],
+      "properties": {
+        "operator": {
+          "type": "string",
+          "enum": [
+            "equals",
+            "not_equals",
+            "contains",
+            "not_contains",
+            "lte",
+            "gte",
+            "in",
+            "policy_exists",
+            "manual"
+          ],
+          "description": "Comparison or rule operator used to evaluate the tenant setting."
+        },
+        "path": {
+          "type": "string",
+          "description": "Dotted JSON property path extracted from the Graph payload."
+        },
+        "value": {
+          "description": "Expected baseline value (boolean, string, number, array or object)."
+        },
+        "rule": {
+          "type": "string",
+          "description": "Named check evaluator rule for complex multi-field policy assertions."
+        }
+      }
+    },
+    "api_source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "graph",
+            "manual"
+          ],
+          "description": "Whether this setting is collected read-only via Microsoft Graph or requires manual verification."
+        },
+        "version": {
+          "type": "string",
+          "enum": [
+            "v1.0",
+            "beta"
+          ],
+          "description": "Microsoft Graph API version."
+        },
+        "method": {
+          "type": "string",
+          "const": "GET",
+          "description": "HTTP method. Only read-only GET is permitted."
+        },
+        "endpoint": {
+          "type": "string",
+          "pattern": "^/",
+          "description": "Relative Microsoft Graph path starting with '/'."
+        },
+        "permissions": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "description": "Least-privilege read-only Microsoft Graph permissions required for this endpoint."
+        },
+        "junction_operation": {
+          "type": "string",
+          "description": "Optional jusso-dev/junction canonical operation identifier."
+        },
+        "manual_reason": {
+          "type": "string",
+          "description": "Reason why the setting cannot be evaluated automatically through Microsoft Graph."
+        },
+        "manual_guidance": {
+          "type": "string",
+          "description": "Recommended manual or PowerShell verification step for an operator or IRAP assessor."
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "graph"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "version",
+              "method",
+              "endpoint",
+              "permissions"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "manual"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "manual_reason"
+            ]
+          }
+        }
+      ]
+    }
+  }
+}
